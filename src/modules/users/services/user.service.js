@@ -1,0 +1,66 @@
+import { UserRepository } from "../repositories/user.repository";
+import { validateIntegerValues } from "../../../common/errors/validate-integer values.error";
+import { notExists, notFound } from "../../../common/errors/not-exist.error";
+import bcrypt from 'bcrypt';
+
+export class UserService {
+    constructor() {
+        this.userRepository = new UserRepository()
+    }
+
+    async getAll() {
+        return await this.userRepository.getAll();
+    }
+
+    async getById(id) {
+        const parseId = Number(id);
+        validateIntegerValues(parseId, 'user ID');
+        const user = await this.userRepository.getById(parseId);
+        return notExists(user, "User");
+    }
+
+    async getByEmail(email) {
+        const user = await this.userRepository.getByEmail(email);
+        return notExists(user, "User");
+    }
+
+    async createUser(data) {
+        const { name, email, password } = data;
+        const existingUser = await this.userRepository.getByEmail(email);
+        if(existingUser) {
+            throw new Error("Email Already Exists");
+        }
+        const hashedPass = await bcrypt.hash(password, 10);
+        const user = await this.userRepository.create({
+            name,
+            email,
+            password: hashedPass,
+        });
+        const { password: _, ...userWithoutPass} = user;
+        return userWithoutPass;
+    }
+
+    async update(id, data) {
+        const { name, email, password } = data;
+        const parseId = Number(id);
+        validateIntegerValues(parseId, "User ID");
+        const user = await this.userRepository.getById(parseId);
+        notFound(user, "User");
+        const hashedPass = await bcrypt.hash(password, 10);
+        const updatedUser = await this.userRepository.update({
+            name,
+            email,
+            password: hashedPass,
+        });
+        const { password: _, ...userWithoutPass } = updatedUser;
+        return userWithoutPass;
+    }
+
+    async deleteUser(id) {
+        const parseId = Number(id);
+        validateIntegerValues(parseId, "User ID");
+        const user = await this.userRepository.getById(parseId);
+        notFound(user, "User");
+        await this.userRepository.delete(parseId);
+    }
+}

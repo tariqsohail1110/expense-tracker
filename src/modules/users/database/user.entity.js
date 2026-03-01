@@ -10,11 +10,11 @@ export const User = {
 };
 
 export const createUserTable = `
-    CREATE TABLE IF IT DOES NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS users (
         id          SERIAL PRIMARY KEY,
         name        VARCHAR(100) NOT NULL,
         email       VARCHAR(50) NOT NULL,
-        password:   TEXT OR NULL,
+        password    TEXT NOT NULL,
         created_at  TIMESTAMP DEFAULT NOW()
     );
 `
