@@ -1,6 +1,6 @@
-import { UserRepository } from "../repositories/user.repository";
-import { validateIntegerValues } from "../../../common/errors/validate-integer values.error";
-import { notExists, notFound } from "../../../common/errors/not-exist.error";
+import { UserRepository } from "../repositories/user.repository.js";
+import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
+import { notExists, notFound } from "../../../common/errors/not-exist.error.js";
 import bcrypt from 'bcrypt';
 
 export class UserService {

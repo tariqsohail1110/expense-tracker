@@ -1,0 +1,17 @@
+import { Router } from "express";
+import { UserController } from "../modules/users/controllers/user.controller.js";
+import { validate } from "../middlewares/validation.middleware.js";
+import { validateCreateUserDto } from "../middlewares/validate-create-user.fn.js";
+import { validateUpdateUserDto } from "../middlewares/validate-update-user.fn.js";
+
+const router = Router();
+const userController = new UserController();
+
+router.get('/', userController.getAllUsers);
+router.get('/email', userController.getByEmail);
+router.get('/:id', userController.getById);
+router.post('/', validate(validateCreateUserDto), userController.createUser);
+router.put('/:id', validate(validateUpdateUserDto), userController.updateUser);
+router.delete('/:id', userController.deleteUser);
+
+export default router;
