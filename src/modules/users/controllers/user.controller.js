@@ -54,6 +54,8 @@ export class UserController {
         try {
             const { id } = req.params;
             const data = req.body;
+            console.log(`Controller - ID: ${id}`);
+            console.log(`Controller - DATA: ${data}`);
             const user = await this.userService.update(id, data);
             res.status(201).json({ data: UserResponseDto(user) });
         }catch(error) {

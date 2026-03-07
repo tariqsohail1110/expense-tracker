@@ -1,11 +1,12 @@
 import { UserRepository } from "../repositories/user.repository.js";
 import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
 import { notExists, notFound } from "../../../common/errors/not-exist.error.js";
-import bcrypt from 'bcrypt';
+import { HashingService } from "../../../common/hashingService/hashing.service.js";
 
 export class UserService {
     constructor() {
-        this.userRepository = new UserRepository()
+        this.userRepository = new UserRepository();
+        this.hashingService = new HashingService();
     }
 
     async getAll() {
@@ -30,7 +31,7 @@ export class UserService {
         if(existingUser) {
             throw new Error("Email Already Exists");
         }
-        const hashedPass = await bcrypt.hash(password, 10);
+        const hashedPass = await this.hashingService.hashPassword(password);
         const user = await this.userRepository.create({
             name,
             email,
@@ -41,17 +42,16 @@ export class UserService {
     }
 
     async update(id, data) {
-        const { name, email, password } = data;
+        console.log(`Service - ID: ${id}`);
+        console.log(`Service - DATA: ${data}`);
         const parseId = Number(id);
         validateIntegerValues(parseId, "User ID");
         const user = await this.userRepository.getById(parseId);
         notFound(user, "User");
-        const hashedPass = await bcrypt.hash(password, 10);
-        const updatedUser = await this.userRepository.update({
-            name,
-            email,
-            password: hashedPass,
-        });
+        if(data.password) {
+            data.password = await this.hashingService.hashPassword(data.password);
+        }
+        const updatedUser = await this.userRepository.update(parseId, data);
         const { password: _, ...userWithoutPass } = updatedUser;
         return userWithoutPass;
     }
