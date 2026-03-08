@@ -10,7 +10,9 @@ export class UserService {
     }
 
     async getAll() {
-        return await this.userRepository.getAll();
+        const users = await this.userRepository.getAll();
+        // console.log("Service: ", users);
+        return users;
     }
 
     async getById(id) {
@@ -42,8 +44,8 @@ export class UserService {
     }
 
     async update(id, data) {
-        console.log(`Service - ID: ${id}`);
-        console.log(`Service - DATA: ${data}`);
+        // console.log(`Service - ID: ${id}`);
+        // console.log(`Service - DATA: ${data}`);
         const parseId = Number(id);
         validateIntegerValues(parseId, "User ID");
         const user = await this.userRepository.getById(parseId);

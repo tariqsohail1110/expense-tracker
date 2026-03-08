@@ -5,6 +5,7 @@ export class UserRepository {
         const result = await pool.query(
             "SELECT * FROM users"
         );
+        // console.log('Result:', result.rows);
         return result.rows;
     }
 

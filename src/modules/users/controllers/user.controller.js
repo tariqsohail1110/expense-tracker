@@ -14,7 +14,8 @@ export class UserController {
     getAllUsers = async (req, res) => {
         try {
             const users = await this.userService.getAll();
-            res.status(200).json({ data: UserResponseDto(users) });
+            // console.log("Controller: ", users);
+            res.status(200).json({ data: users.map(user => UserResponseDto(user)) });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -33,6 +34,7 @@ export class UserController {
     getByEmail = async (req, res) => {
         try {
             const { email } = req.query;
+            // console.log(`Email received ${email}`);
             const user = await this.userService.getByEmail(email);
             res.status(200).json({ data: UserResponseDto(user) });
         }catch(error) {
@@ -54,8 +56,8 @@ export class UserController {
         try {
             const { id } = req.params;
             const data = req.body;
-            console.log(`Controller - ID: ${id}`);
-            console.log(`Controller - DATA: ${data}`);
+            // console.log(`Controller - ID: ${id}`);
+            // console.log(`Controller - DATA: ${data}`);
             const user = await this.userService.update(id, data);
             res.status(201).json({ data: UserResponseDto(user) });
         }catch(error) {
