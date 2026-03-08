@@ -8,6 +8,7 @@ export const Expense = {
         category: `VARCHAR(50) CHECK (category IN
             ('Food', 'Transport', 'Shopping', 'Health', 'Entertainment', 'Bills', 'Others'))`,
         date: 'DATE NOT NULL',
+        note: 'VARCHAR(300) NOT NULL',
         createdAt: 'TIMESTAMP DEFUALT NOW()',
     }
 };
@@ -21,6 +22,7 @@ export const createExpenseTable = `
         category   VARCHAR(50) CHECK (category IN
                     ('Food', 'Transport', 'Shopping', 'Health', 'Entertainment', 'Bills, 'Others')),
         date       DATE NOT NULL,
+        note       VARCHAR(300) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
     );
 `

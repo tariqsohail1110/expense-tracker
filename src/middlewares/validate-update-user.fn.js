@@ -33,6 +33,8 @@ export const validateUpdateUserDto = (data) => {
         errors.password = 'Password must be a string!';
     }else if(data.password.length < 8) {
         errors.password = 'Password should be atleast 8 characters';
+    }else if(data.password.length > 50) {
+        errors.password = 'Password must be less than 51 characters';
     }
     return {
         isValid: Object.keys(errors).length === 0, errors
