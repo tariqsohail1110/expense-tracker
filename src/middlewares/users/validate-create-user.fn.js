@@ -1,4 +1,4 @@
-import { CreateUserRequestDto } from "../modules/users/dtos/create-user-request.dto.js";
+import { CreateUserRequestDto } from "../../modules/users/dtos/create-user-request.dto.js";
 
 export const validateCreateUserDto = (data) => {
     const errors = {}

@@ -1,5 +1,3 @@
-import { UpdateUserDto } from '../modules/users/dtos/update-user-request.dto.js'
-
 export const validateUpdateUserDto = (data) => {
     const errors = {}
     

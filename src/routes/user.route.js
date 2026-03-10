@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { UserController } from "../modules/users/controllers/user.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
-import { validateCreateUserDto } from "../middlewares/validate-create-user.fn.js";
-import { validateUpdateUserDto } from "../middlewares/validate-update-user.fn.js";
+import { validateCreateUserDto } from "../middlewares/users/validate-create-user.fn.js";
+import { validateUpdateUserDto } from "../middlewares/users/validate-update-user.fn.js";
 
 const router = Router();
 const userController = new UserController();
