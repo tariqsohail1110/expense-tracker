@@ -11,10 +11,11 @@ export class ExpenseController {
         this.deleteExpense = this.deleteExpense.bind(this);
     }
 
-    getAllExpenses = (req, res) => {
+    getAllExpenses = async (req, res) => {
         try {
             const { userId } = req.params;
-            const expenses = this.expenseService.getAllExpenses(userId);
+            const expenses = await this.expenseService.getAllExpenses(userId);
+            // console.log('expenses: ', expenses);
             res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)) });
         }catch(error) {
             res.status(500).json({ message: error.message });
@@ -24,8 +25,9 @@ export class ExpenseController {
     getExpenseById = async (req, res) => {
         try {
             const { id } = req.params;
-            const { userId } = req.body;
-            const expense = await this.expenseService.getExpenseById(id, userId);
+            const { user_id } = req.query;
+            console.log("userID: ", user_id);
+            const expense = await this.expenseService.getExpenseById(id, user_id);
             res.status(200).json({ data: ExpenseResponseDto(expense) });
         }catch (error) {
             res.status(404).json({ message: error.message });
@@ -34,9 +36,8 @@ export class ExpenseController {
 
     createExpense = async (req, res) => {
         try {
-            const { userId } = req.body;
-            const data = req.body;
-            const expense = await this.expenseService.createExpense(userId, data);
+            const { user_id, ...data } = req.body;
+            const expense = await this.expenseService.createExpense(user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
             res.status(400).json({ message: error.message });
@@ -46,9 +47,8 @@ export class ExpenseController {
     updateExpense = async (req, res) => {
         try {
             const { id } = req.params;
-            const { userId } = req.body;
-            const data = req.body;
-            const expense = await this.updateExpense(id, userId, data);
+            const { user_id, ...data } = req.body;
+            const expense = await this.expenseService.updateExpense(id, user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
             res.status(400).json({ message: error.message });
@@ -58,8 +58,9 @@ export class ExpenseController {
     deleteExpense = async (req, res) => {
         try {
             const { id } = req.params;
-            const{ userId } = req.body;
-            await this.expenseService.deleteExpense(id, userId);
+            const{ user_id } = req.query;
+            console.log("userID: ", user_id);
+            await this.expenseService.deleteExpense(id, user_id);
             res.status(200).json({ message: "Expense deleted successfully!" });
         }catch(error) {
             res.status(400).json({ message: error.message });

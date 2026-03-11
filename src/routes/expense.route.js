@@ -7,7 +7,7 @@ import { validateUpdateExpenseDto } from '../middlewares/expenses/validate-updat
 const router = Router();
 const expenseController = new ExpenseController();
 
-router.get('/', expenseController.getAllExpenses);
+router.get('/user/:userId', expenseController.getAllExpenses);
 router.get('/:id', expenseController.getExpenseById);
 router.post('/', validate(validateCreateExpenseDto), expenseController.createExpense);
 router.put('/:id', validate(validateUpdateExpenseDto), expenseController.updateExpense);

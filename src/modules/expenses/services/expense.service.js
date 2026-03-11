@@ -32,6 +32,8 @@ export class ExpenseService {
     }
 
     async createExpense(userId, data) {
+        console.log('userId:', userId) // add this
+        console.log('data:', data)
         const parseId = Number(userId);
         validateIntegerValues(parseId, 'User');
         const { title, amount, category, date, note } = data;

@@ -18,7 +18,7 @@ export class ExpenseRepository {
     async create(userId, data) {
         const {title, amount, category, date, note} = data;
         const result = await pool.query(
-            "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES ($1, $2, $3, $4, $5, $6) RETRNING *", 
+            "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
             [userId, title, amount, category, date, note]
         );
         return result.rows[0];
