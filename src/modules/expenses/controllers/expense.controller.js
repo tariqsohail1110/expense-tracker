@@ -26,7 +26,7 @@ export class ExpenseController {
         try {
             const { id } = req.params;
             const { user_id } = req.query;
-            console.log("userID: ", user_id);
+            // console.log("userID: ", user_id);
             const expense = await this.expenseService.getExpenseById(id, user_id);
             res.status(200).json({ data: ExpenseResponseDto(expense) });
         }catch (error) {
