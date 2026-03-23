@@ -15,4 +15,15 @@ export class AuthenticationController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    refresh = async (req, res) => {
+        try {
+            const { refreshToken } = req.body;
+            const refresh = await this.authenticationService.generateNewAccessToken(refreshToken);
+            res.status(200).json({ data: refresh });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
 }

@@ -29,4 +29,8 @@ export class AuthenticationService {
             throw new error;
         }
     }
+
+    async generateNewAccessToken(refreshToken) {
+        return await this.jwtService.generateNewAccessToken(refreshToken);
+    }
 }
