@@ -24,9 +24,9 @@ export class ExpenseService {
         const parseUserId = Number(userId);
         validateIntegerValues(parseId, 'Expense ID');
         validateIntegerValues(parseUserId, 'User ID');
-        // const user = await this.userRepository.getById(parseUserId);
+        const user = await this.userRepository.getById(parseUserId);
+        notFound(user, 'User');
         const expense = await this.expenseRepository.getById(parseId, parseUserId);
-        // notFound(user, 'User');
         notFound(expense, 'Expense');
         return expense;
     }
@@ -55,6 +55,8 @@ export class ExpenseService {
         const parseUserId = Number(userId);
         validateIntegerValues(parseId, 'Expense ID');
         validateIntegerValues(parseUserId, 'User ID');
+        const user = await this.userRepository.getById(parseUserId);
+        notFound(user, "User");
         const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
         notFound(existingExpense, 'Expense');
         return await this.expenseRepository.update(parseId, parseUserId, data);
@@ -65,6 +67,8 @@ export class ExpenseService {
         const parseUserId = Number(userId);
         validateIntegerValues(parseId, 'Expense ID');
         validateIntegerValues(parseUserId, 'User ID');
+        const user = await this.userRepository.getById(parseUserId);
+        notFound(user, "User");
         const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
         notFound(existingExpense, 'Expense');
         return await this.expenseRepository.delete(parseId, parseUserId);
