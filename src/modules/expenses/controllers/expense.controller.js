@@ -4,11 +4,6 @@ import { ExpenseResponseDto } from "../dtos/expense-response.dto.js";
 export class ExpenseController {
     constructor() {
         this.expenseService = new ExpenseService();
-        this.getAllExpenses = this.getAllExpenses.bind(this);
-        this.getExpenseById = this.getExpenseById.bind(this);
-        this.createExpense = this.createExpense.bind(this);
-        this.updateExpense = this.updateExpense.bind(this);
-        this.deleteExpense = this.deleteExpense.bind(this);
     }
 
     getAllExpenses = async (req, res) => {
@@ -18,7 +13,8 @@ export class ExpenseController {
             // console.log('expenses: ', expenses);
             res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)) });
         }catch(error) {
-            res.status(500).json({ message: error.message });
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
+            res.status(statusCode).json({ message: error.message });
         }
     }
 
@@ -30,7 +26,8 @@ export class ExpenseController {
             const expense = await this.expenseService.getExpenseById(id, user_id);
             res.status(200).json({ data: ExpenseResponseDto(expense) });
         }catch (error) {
-            res.status(404).json({ message: error.message });
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 404;
+            res.status(statusCode).json({ message: error.message });
         }
     }
 
@@ -40,7 +37,8 @@ export class ExpenseController {
             const expense = await this.expenseService.createExpense(user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
-            res.status(400).json({ message: error.message });
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
         }
     }
 
@@ -51,7 +49,8 @@ export class ExpenseController {
             const expense = await this.expenseService.updateExpense(id, user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
-            res.status(400).json({ message: error.message });
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
         }
     }
 
@@ -63,7 +62,8 @@ export class ExpenseController {
             await this.expenseService.deleteExpense(id, user_id);
             res.status(200).json({ message: "Expense deleted successfully!" });
         }catch(error) {
-            res.status(400).json({ message: error.message });
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
         }
     }
 }

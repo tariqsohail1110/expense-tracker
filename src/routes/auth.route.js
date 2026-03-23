@@ -4,6 +4,6 @@ import { AuthenticationController } from "../modules/auth/controllers/auth.contr
 const router = Router();
 const authenticationController = new AuthenticationController();
 
-router.post('/', authenticationController.logIn)
+router.post('/', authenticationController.logIn);
 
 export default router;

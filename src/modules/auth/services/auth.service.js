@@ -13,21 +13,20 @@ export class AuthenticationService {
     async login(email, password) {
         try {
             const user = await this.userService.getByEmail(email);
-            notFound(user, "User");
             const isMatch = await this.hashingService.comparePlainPass(password, user.password);
-            if(!isMatch) {
-                throw new Error("Incorrect Password!");
+            if(!isMatch || !user) {
+                throw new Error("Invalid Credentials");
             }
             const accessToken = await this.jwtService.generateAccessToken(user.id, user.email);
             const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email);
-            const { password: _, created_at, ...userWithoutPass } = user;
+            const { password: _, ...userWithoutPass } = user;
             return {
                 user: userWithoutPass,
                 accessToken,
                 refreshToken,
             };
         }catch (error) {
-            throw new Error(error.message);
+            throw new error;
         }
     }
 }

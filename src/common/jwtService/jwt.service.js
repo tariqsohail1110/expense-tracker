@@ -19,7 +19,7 @@ export class JWTService {
             });
 
         }catch(error) {
-            throw new Error(error.message);
+            throw error;
         }
     }
 
@@ -36,7 +36,7 @@ export class JWTService {
                 expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
             });
         }catch(error) {
-            throw new Error(error.message);
+            throw error;
         }
     }
 }
