@@ -26,7 +26,11 @@ export class AuthenticationService {
                 refreshToken,
             };
         }catch (error) {
-            throw new error;
+            throw error;
         }
+    }
+
+    async generateNewAccessToken(refreshToken) {
+        return await this.jwtService.generateNewAccessToken(refreshToken);
     }
 }

@@ -39,6 +39,24 @@ export class JWTService {
             throw error;
         }
     }
+
+    async generateNewAccessToken(refreshToken) {
+        try {
+            const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            if(payload.type !== 'refresh') {
+                throw new Error('Invalid token type');
+            }
+            const newAccessToken = await this.generateAccessToken(
+                payload.sub,
+                payload.email
+            )
+            return {
+                accessToken: newAccessToken
+            };
+        }catch(error) {
+            throw error;
+        }
+    }
 }
 
 // const jwtService = new JWTService();
