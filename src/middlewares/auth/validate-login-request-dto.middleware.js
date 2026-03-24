@@ -1,21 +1,22 @@
 import { LoginRequestDto } from "../../modules/auth/dtos/login.dto.js"
 
-export const valiateLoginRequestDto = (data) => {
+export const validateLoginRequestDto = (data) => {
     const errors = {}
+    const safeData = data && typeof data === "object" ? data : {};
     Object.keys(LoginRequestDto).forEach(field => {
-        if(!data[field]) {
+        if(!safeData[field]) {
             errors[field] = `${field} is required`;
         }
     })
-    if (typeof data.email !== 'string') {
+    if (typeof safeData.email !== 'string') {
         errors.email = 'Invalid Email';
-    }else if(!data.email.includes("@")) {
+    }else if(!safeData.email.includes("@")) {
         errors.email = 'Invalid Email';
     }
 
-    if(typeof data.password !== 'string') {
+    if(typeof safeData.password !== 'string') {
         errors.password = 'Invalid Password';
-    }else if(data.password.length < 8) {
+    }else if(safeData.password.length < 8) {
         errors.password = 'Invalid Password';
     }
     return {

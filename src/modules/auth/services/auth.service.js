@@ -26,7 +26,7 @@ export class AuthenticationService {
                 refreshToken,
             };
         }catch (error) {
-            throw new error;
+            throw error;
         }
     }
 

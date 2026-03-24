@@ -22,17 +22,17 @@ export const validateCreateUserDto = (data) => {
     if(typeof data.password !== 'string') {
         errors.password = 'Password must be a string!';
     }else if(data.password.length < 8) {
-        errors.password = 'Password must be atleast 8 characters';
+        errors.password = 'Password must be at least 8 characters';
     }else if(data.password.length > 50) {
         errors.password = 'Password must be less than 51 characters';
     }else if(!/[a-z]/.test(data.password)) {
-        errors.password = 'Password must contain atleast one lowercase characher';
+        errors.password = 'Password must contain at least one lowercase character';
     }else if(!/[A-Z]/.test(data.password)) {
-        errors.password = 'Password must contain atleast one uppercase characher';
+        errors.password = 'Password must contain at least one uppercase character';
     }else if(!/[0-9]/.test(data.password)) {
-        errors.password = 'Password must contain atleast one number';
+        errors.password = 'Password must contain at least one number';
     }else if(!/[^a-zA-Z0-9]/.test(data.password)) {
-        errors.password = 'Password must contain atleast one special characher';
+        errors.password = 'Password must contain at least one special character';
     }
     return {
         isValid: Object.keys(errors).length === 0, errors

@@ -51,7 +51,7 @@ export class JWTService {
                 payload.email
             )
             return {
-                newAccessToken
+                accessToken: newAccessToken
             };
         }catch(error) {
             throw error;
