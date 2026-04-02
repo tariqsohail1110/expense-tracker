@@ -21,7 +21,7 @@ export const createOtpTable = `
         email       VARCHAR(150) NOT NULL,
         created_at  TIMESTAMP DEFAULT NOW(),
         expired_at  TIMESTAMP NOT NULL,
-        isUsed      BOOLEAN DEFUALT FALSE NOT NULL,
-        attempts    INTEGER DEFAULT 0 NOT NULL,USE 
-    )
+        isUsed      BOOLEAN DEFAULT FALSE NOT NULL,
+        attempts    INTEGER DEFAULT 0 NOT NULL 
+    );
 `

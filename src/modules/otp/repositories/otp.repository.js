@@ -7,6 +7,13 @@ export class OtpRepository {
         return result.rows[0];
     }
 
+    async getOtpByUserId(userId) {
+        const result = await pool.query(
+            "SELECT FROM otps WHERE user_id = $1", [userId] 
+        );
+        return result.rows[0];
+    }
+
     async createOtp(
         userId,
         email,
@@ -15,7 +22,7 @@ export class OtpRepository {
         expiresIn
     ) {
         const result = await pool.query(
-            "INSER INTO otps (user_id, code, purpose, email, expired_at) VALUES ($1, $2, $3, $4, $5) RETURNING *", [userId, code, purpose, email, expiresIn]
+            "INSERT INTO otps (user_id, code, purpose, email, expired_at) VALUES ($1, $2, $3, $4, $5) RETURNING *", [userId, code, purpose, email, expiresIn]
         );
         return result.rows[0];
     }
@@ -25,7 +32,7 @@ export class OtpRepository {
         purpose
     ) {
         const result = await pool.query(
-            "SELECT * FROM otps WHERE user_id = $1 AND purpose = $2 AND isUsed = false AND expired_at > NOW() ORDER BY created_at DESC LIMIT 1 RETURNING *", [userId, purpose]
+            "SELECT * FROM otps WHERE user_id = $1 AND purpose = $2 AND isUsed = false AND expired_at > NOW() ORDER BY created_at DESC LIMIT 1", [userId, purpose]
         );
         return result.rows[0];
     }
@@ -68,7 +75,7 @@ export class OtpRepository {
         const sinceTime = new Date();
         sinceTime.setMinutes(sinceTime.getMinutes() - minutesAgo);
         const result = await pool.query(
-            "DELETE FROM otps WHERE user_id = $1, purpose = $2 AND created_at > $3 RETURNING *", [userId, purpose, sinceTime]
+            "SELECT COUNT(*) FROM otps WHERE user_id = $1 AND purpose = $2 AND created_at > $3", [userId, purpose, sinceTime]
         );
         return parseInt(result.rows[0].count);
     }

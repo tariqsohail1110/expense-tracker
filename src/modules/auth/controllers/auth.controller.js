@@ -16,6 +16,17 @@ export class AuthenticationController {
         }
     }
 
+    verify = async (req,res) => {
+        try {
+            const data = req.body;
+            const verify = await this.authenticationService.verifyUser(data.email, data.code);
+            res.status(200).json({ data: verify });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 401;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
     refresh = async (req, res) => {
         try {
             const { refreshToken } = req.body;

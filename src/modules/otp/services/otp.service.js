@@ -20,27 +20,25 @@ export class OtpService {
             }
             return otp;
         }catch(error) {
-            throw new Error;
+            throw error;
         }
     }
 
     async generateOtp() {
         try {
             const code = Math.floor(100000 + Math.random() * 900000).toString();
-            console.log(code);
             return code;
         }catch(error) {
-            throw new Error;
+            throw new error;
         }
     }
 
     async verifyOtp(otp, storedOtp) {
         try {
-            const compare = otp.trim() === storedOtp;
-            console.log(compare);
+            const compare = await otp.trim() === storedOtp.trim();
             return compare;
         }catch(error) {
-            throw new Error;
+            throw error;
         }
     }
     
@@ -51,23 +49,27 @@ export class OtpService {
     ) {
         try {
             const recentOtpCounts = await this.otpRepository.countRecentOtps(userId, purpose, this.RATE_LIMIT_MINUTES);
-            if(recentOtpCounts > 0) {
-                throw new Error(`Please wait ${this.RATE_LIMIT_MINUTES} before trying again`);
+            //Rate limiting will be added later on, this one doesn't works
+            if(recentOtpCounts >= this.MAX_ATTEMPTS) {
+                throw new Error(`Please wait ${this.RATE_LIMIT_MINUTES} minutes before trying again`);
             }
+            //this delete method creates a problem due to which recentOtpCounts sticks to 1
             await this.otpRepository.deleteUserOtps(userId, purpose);
-            const code = this.generateOtp();
+            const code = await this.generateOtp();
+            console.log("SEND OTP:", code);
+            const expiredAt = new Date();
+            expiredAt.setMinutes(expiredAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
             await this.otpRepository.createOtp(
                 userId,
                 email,
                 code,
                 purpose,
-                this.OTP_EXPIRY_MINUTES
+                expiredAt
             );
-            console.log('Otp sent');
 
             //Email service logic or maybe in auth service
         }catch(error) {
-            throw new Error;
+            throw new error;
         }
     }
 
@@ -81,10 +83,10 @@ export class OtpService {
             if(!otp) {
                 throw new Error('No valid Otp found, please request a new one');
             }
-            if(otp.isUsed) {
+            if(otp.is_used) {
                 throw new Error('Otp has been used, please request a new one');
             }
-            if(new Date() > otp.expiredAt) {
+            if(new Date() > otp.expired_at) {
                 throw new Error('Otp has been expired, please request a new one')
             }
             if(otp.attempts >= this.MAX_ATTEMPTS) {
@@ -102,10 +104,9 @@ export class OtpService {
                 }
             }
             await this.otpRepository.markAsUsed(otp.id);
-            console.log('Otp verified');
             return true;
         }catch(error) {
-            throw new Error;
+            throw error;
         }
     }
 }
