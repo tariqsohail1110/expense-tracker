@@ -1,10 +1,12 @@
 import { notFound } from "../../../common/errors/not-exist.error.js";
 import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
+import { EmailService } from "../../../common/mailer/email.service.js";
 import { OtpRepository } from "../repositories/otp.repository.js";
 
 export class OtpService {
     constructor() {
         this.otpRepository = new OtpRepository();
+        this.emailService = new EmailService();
         this.MAX_ATTEMPTS = 3;
         this.RATE_LIMIT_MINUTES = 2;
         this.OTP_EXPIRY_MINUTES = 10;
@@ -56,7 +58,7 @@ export class OtpService {
             //this delete method creates a problem due to which recentOtpCounts sticks to 1
             await this.otpRepository.deleteUserOtps(userId, purpose);
             const code = await this.generateOtp();
-            console.log("SEND OTP:", code);
+            // console.log("SEND OTP:", code);
             const expiredAt = new Date();
             expiredAt.setMinutes(expiredAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
             await this.otpRepository.createOtp(
@@ -68,6 +70,11 @@ export class OtpService {
             );
 
             //Email service logic or maybe in auth service
+            await this.emailService.sendOtpEmail(
+                email,
+                code,
+                expiredAt
+            );
         }catch(error) {
             throw error;
         }
