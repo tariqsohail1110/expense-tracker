@@ -10,6 +10,7 @@ const router = Router();
 const authenticationController = new AuthenticationController();
 
 router.post('/register', validate(validateRegisterUserDto), authenticationController.register);
+router.post('/', validate(validateLoginRequestDto), authenticationController.logIn);
 router.post('/login', validate(validateLoginRequestDto), authenticationController.logIn);
 router.post('/verify', validate(validateVerifyOtpDto), authenticationController.verify);
 router.post('/refresh', validate(validateRefreshTokenDto), authenticationController.refresh);
