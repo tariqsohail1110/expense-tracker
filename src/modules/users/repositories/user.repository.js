@@ -46,4 +46,11 @@ export class UserRepository {
             "DELETE FROM users WHERE id = $1 RETURNING *", [id]
         );
     }
+
+    async activateUser(id) {
+        const result = await pool.query(
+            "UPDATE users SET is_active = true WHERE id = $1 RETURNING *", [id]
+        );
+        return result.rows[0];
+    }
 }

@@ -12,6 +12,21 @@ export class AuthenticationService {
         this.otpService = new OtpService();
     }
 
+    async registerUser(name, email, password, confirmPass) {
+        try{
+            const data = { name, email, password };
+            console.log(data.password);
+            console.log(confirmPass);
+            if(data.password !== confirmPass) {
+                throw new Error("Passwords doesn't match");
+            }
+            const register = await this.userService.createUser(data);
+            return register;
+        }catch(error) {
+            throw error;
+        }
+    }
+
     async login(email, password) {
         try {
             const user = await this.userService.getByEmail(email);
@@ -20,38 +35,49 @@ export class AuthenticationService {
                 throw new Error("Invalid Credentials");
             }
             // console.log("User", user);
-            const code = await this.otpService.sendOtp(
+            await this.otpService.sendOtp(
                 user.id,
                 user.email,
                 OtpPurpose.LOGIN,
             );
             return "Otp sent successfully to your email";
         }catch (error) {
-            throw new Error;
+            throw error;
         }
     }
 
     async verifyUser(email, code) {
-    const user =  await this.userService.getByEmail(email);
-        const verifiedOtp = await this.otpService.verifyAndConsume(
-            user.id,
-            code,
-            OtpPurpose.LOGIN
-        );
-        if(!user || !verifiedOtp) {
-            throw new Error("Invalid, please try again");
+        try{
+            const user =  await this.userService.getByEmail(email);
+            const verifiedOtp = await this.otpService.verifyAndConsume(
+                user.id,
+                code,
+                OtpPurpose.LOGIN
+            );
+            if(!user || !verifiedOtp) {
+                throw new Error("Invalid, please try again");
+            }
+            const accessToken = await this.jwtService.generateAccessToken(user.id, user.email);
+            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email);
+            const { password: _, is_active, ...userWithoutPass } = user;
+            if(user.is_active === false) {
+                await this.userService.activateUser(user.id);
+            }
+            return {
+                user: userWithoutPass,
+                accessToken,
+                refreshToken,
+            };
+        }catch(error) {
+            throw error;
         }
-        const accessToken = await this.jwtService.generateAccessToken(user.id, user.email);
-        const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email);
-        const { password: _, ...userWithoutPass } = user;
-        return {
-            user: userWithoutPass,
-            accessToken,
-            refreshToken,
-        };
     }
 
     async generateNewAccessToken(refreshToken) {
-        return await this.jwtService.generateNewAccessToken(refreshToken);
+        try{
+            return await this.jwtService.generateNewAccessToken(refreshToken);
+        }catch(error) {
+            throw error;
+        }
     }
 }

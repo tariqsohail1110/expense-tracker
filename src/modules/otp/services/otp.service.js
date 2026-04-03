@@ -69,7 +69,7 @@ export class OtpService {
 
             //Email service logic or maybe in auth service
         }catch(error) {
-            throw new error;
+            throw error;
         }
     }
 

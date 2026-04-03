@@ -11,7 +11,6 @@ export class UserService {
 
     async getAll() {
         const users = await this.userRepository.getAll();
-        // console.log("Service: ", users);
         return users;
     }
 
@@ -39,13 +38,11 @@ export class UserService {
             email,
             password: hashedPass,
         });
-        const { password: _, ...userWithoutPass} = user;
+        const { password: _, is_active, ...userWithoutPass} = user;
         return userWithoutPass;
     }
 
     async update(id, data) {
-        // console.log(`Service - ID: ${id}`);
-        // console.log(`Service - DATA: ${data}`);
         const parseId = Number(id);
         validateIntegerValues(parseId, "User ID");
         const user = await this.userRepository.getById(parseId);
@@ -64,5 +61,13 @@ export class UserService {
         const user = await this.userRepository.getById(parseId);
         notFound(user, "User");
         await this.userRepository.delete(parseId);
+    }
+
+    async activateUser(id) {
+        try {
+            return await this.userRepository.activateUser(id);
+        }catch(error) {
+            throw error;
+        }
     }
 }
