@@ -2,6 +2,7 @@ import { notFound } from "../../../common/errors/not-exist.error.js";
 import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
 import { EmailService } from "../../../common/mailer/email.service.js";
 import { OtpRepository } from "../repositories/otp.repository.js";
+import crypto from 'crypto';
 
 export class OtpService {
     constructor() {
@@ -28,10 +29,10 @@ export class OtpService {
 
     async generateOtp() {
         try {
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            const code = crypto.randomInt(100000, 999999).toString();   
             return code;
         }catch(error) {
-            throw new error;
+            throw error;
         }
     }
 
@@ -56,7 +57,7 @@ export class OtpService {
                 throw new Error(`Please wait ${this.RATE_LIMIT_MINUTES} minutes before trying again`);
             }
             //this delete method creates a problem due to which recentOtpCounts sticks to 1
-            await this.otpRepository.deleteUserOtps(userId, purpose);
+            // await this.otpRepository.deleteUserOtps(userId, purpose);
             const code = await this.generateOtp();
             // console.log("SEND OTP:", code);
             const expiredAt = new Date();
@@ -73,7 +74,7 @@ export class OtpService {
             await this.emailService.sendOtpEmail(
                 email,
                 code,
-                expiredAt
+                this.OTP_EXPIRY_MINUTES
             );
         }catch(error) {
             throw error;
@@ -90,10 +91,11 @@ export class OtpService {
             if(!otp) {
                 throw new Error('No valid Otp found, please request a new one');
             }
-            if(otp.is_used) {
+            if(otp.isUsed) {
                 throw new Error('Otp has been used, please request a new one');
             }
-            if(new Date() > otp.expired_at) {
+            const expiredAt = new Date(otp.expired_at);
+            if(new Date() > expiredAt) {
                 throw new Error('Otp has been expired, please request a new one')
             }
             if(otp.attempts >= this.MAX_ATTEMPTS) {

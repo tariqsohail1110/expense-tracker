@@ -9,7 +9,7 @@ export class OtpRepository {
 
     async getOtpByUserId(userId) {
         const result = await pool.query(
-            "SELECT FROM otps WHERE user_id = $1", [userId] 
+            "SELECT * FROM otps WHERE user_id = $1", [userId] 
         );
         return result.rows[0];
     }
@@ -57,15 +57,15 @@ export class OtpRepository {
         return result.rows[0];
     }
 
-    async deleteUserOtps(
-        userId,
-        purpose
-    ) {
-        const result = await pool.query(
-            "DELETE FROM otps WHERE user_id = $1 AND purpose = $2 RETURNING *", [userId, purpose]
-        );
-        return result.rows[0];
-    }
+    // async deleteUserOtps(
+    //     userId,
+    //     purpose
+    // ) {
+    //     const result = await pool.query(
+    //         "DELETE FROM otps WHERE user_id = $1 AND purpose = $2 RETURNING *", [userId, purpose]
+    //     );
+    //     return result.rows[0];
+    // }
 
     async countRecentOtps(
         userId, 

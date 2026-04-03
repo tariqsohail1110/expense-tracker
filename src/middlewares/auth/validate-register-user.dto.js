@@ -38,6 +38,17 @@ export const validateRegisterUserDto = (data) => {
         errors.password = 'Password must contain at least one special character';
     }
 
+    //ConfirmPass
+    if(typeof data.confirmPass !== 'string') {
+        errors.confirmPass = 'Confirm password must be a string!';
+    }else if(data.confirmPass.length < 8) {
+        errors.confirmPass = 'Confirm password must be at least 8 characters';
+    }else if(data.confirmPass.length > 50) {
+        errors.confirmPass = 'Confirm password must be less than 51 characters';
+    }else if(typeof data.password === 'string' && data.confirmPass !== data.password) {
+        errors.confirmPass = "Passwords doesn't match";
+    }
+
     return {
         isValid: Object.keys(errors).length === 0, errors
     };

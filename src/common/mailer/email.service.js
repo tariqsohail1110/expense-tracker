@@ -34,22 +34,19 @@ export class EmailService {
             })
         }catch(error) {
             console.error("Verification failed:", error);
+            throw error;
         }
     }
 
     async sendOtpEmail(email, otp, expiresIn) {
-        try {
-            const bodyTemplate = OtpEmailTemplate({
-                otpCode: otp,
-                expiresIn: expiresIn,
-            });
-            await this.sendMail(
-                email,
-                'Your requested OTP code',
-                bodyTemplate,
-            )
-        }catch(error) {
-            throw error;
-        }
+        const bodyTemplate = OtpEmailTemplate({
+            otpCode: otp,
+            expiresIn: expiresIn,
+        });
+        await this.sendMail(
+            email,
+            'Your requested OTP code',
+            bodyTemplate,
+        );
     }
 }

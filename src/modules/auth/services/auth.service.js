@@ -15,11 +15,6 @@ export class AuthenticationService {
     async registerUser(name, email, password, confirmPass) {
         try{
             const data = { name, email, password };
-            console.log(data.password);
-            console.log(confirmPass);
-            if(data.password !== confirmPass) {
-                throw new Error("Passwords doesn't match");
-            }
             const register = await this.userService.createUser(data);
             return register;
         }catch(error) {

@@ -11,7 +11,7 @@ export class AuthenticationController {
             const register = await this.authenticationService.registerUser(data.name, data.email, data.password, data.confirmPass);
             res.status(200).json({ data: register });
         }catch(error) {
-            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 401;
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
     }
@@ -22,7 +22,7 @@ export class AuthenticationController {
             const login = await this.authenticationService.login(data.email, data.password);
             res.status(200).json({ data: login });
         }catch(error) {
-            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 401;
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
     }
@@ -33,7 +33,7 @@ export class AuthenticationController {
             const verify = await this.authenticationService.verifyUser(data.email, data.code);
             res.status(200).json({ data: verify });
         }catch(error) {
-            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 401;
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
     }
