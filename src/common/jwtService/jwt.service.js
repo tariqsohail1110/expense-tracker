@@ -1,10 +1,22 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class JWTService {
+    readPrivateKey = () => {
+        return fs.readFileSync(join(__dirname, '../../keys/private_key.pem'), 'utf8');
+    }
+
+    readPublicKey = () => {
+        return fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
+    }
+
     async generateAccessToken(id, email) {
         try {
             const payload = {
@@ -12,9 +24,10 @@ export class JWTService {
                 email: email,
                 type: 'access'
             }
-            const secret = process.env.JWT_ACCESS_SECRET;
+            const secret = this.readPrivateKey();
 
             return jwt.sign(payload, secret, {
+                algorithm: 'RS256',
                 expiresIn: process.env.JWT_ACCESS_EXPIRES_IN
             });
 
@@ -30,9 +43,10 @@ export class JWTService {
                 email: email,
                 type: 'refresh'
             }
-            const secret = process.env.JWT_REFRESH_SECRET;
+            const secret = this.readPrivateKey();
 
             return jwt.sign(payload, secret, {
+                algorithm: 'RS256',
                 expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
             });
         }catch(error) {
@@ -42,7 +56,8 @@ export class JWTService {
 
     async generateNewAccessToken(refreshToken) {
         try {
-            const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            const key = this.readPublicKey();
+            const payload = jwt.verify(refreshToken, key);
             if(payload.type !== 'refresh') {
                 throw new Error('Invalid token type');
             }
