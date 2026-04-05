@@ -1,7 +1,13 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs';
 
-dotenv.config();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const readPublicKey = () => {
+        return fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
+    }
 
 export const authMiddleware = async (req, res, next) => {
     const token = req.token;
@@ -10,7 +16,8 @@ export const authMiddleware = async (req, res, next) => {
         return await res.status(403).json({ message: 'No token provided' });
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+        const key = readPublicKey();
+        const decoded = jwt.verify(token, key);
         if(decoded.type !== 'access') {
             return await res.status(401).json({ message: 'Invalid token' });
         }
