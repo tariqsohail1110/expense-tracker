@@ -16,7 +16,7 @@ router.post('/login', validate(validateLoginRequestDto), authenticationControlle
 router.post('/verify', validate(validateVerifyOtpDto), authenticationController.verify);
 router.post('/refresh', validate(validateRefreshTokenDto), authenticationController.refresh);
 router.post('/forget', validate(validateForgetPasswordDto),  authenticationController.forget);
-router.post('/verfyotp', validate(validateVerifyOtpDto), authenticationController.verifyOtpforReset);
+router.post('/verifyotp', validate(validateVerifyOtpDto), authenticationController.verifyOtpforReset);
 router.post('/reset', validate(validateResetPasswordDto),  authenticationController.resetPass);
 
 export default router;

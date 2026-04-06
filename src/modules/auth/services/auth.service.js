@@ -80,14 +80,15 @@ export class AuthenticationService {
     async forgetPassword(email) {
         try {
             const user = await this.userService.getByEmail(email);
-            await this.otpService.sendOtp(
-                user.id,
-                email,
-                OtpPurpose.PASSWORD_RESET
-            );
-            return { message: 'Otp sent successfully to your email' };
+            if(user) {}
+                await this.otpService.sendOtp(
+                    user.id,
+                    email,
+                    OtpPurpose.PASSWORD_RESET
+                );
+             return { message: 'If this email is registered, an OTP will be sent to it' };
         }catch(error) {
-            throw error;
+             return { message: 'If this email is registered, an OTP will be sent to it' };
         }
     }
 
@@ -102,18 +103,22 @@ export class AuthenticationService {
             if(!user || !verifiedOtp) {
                 throw new Error("Invalid, please try again");
             };
-            const refreshToken = await this.jwtService.generateResetToken(user.id, email);
-            return refreshToken;
+            const resetToken = await this.jwtService.generateResetToken(user.id, email);
+            return { resetToken };
         }catch(error) {
-            throw error;
+            throw new  Error('Invalid, please try again');
         }
     }
 
     async resetPassword(token, password, confirmPass) {
         try {
             const key = this.jwtService.readPublicKey();
-            const decoded = jwt.verify(token, key);
-            if(!decoded || !decoded.type === 'reset') {
+            const decoded = jwt.verify(token, key,
+                {
+                    algorithms: ['RS256']
+                }
+            );
+            if(!decoded || decoded.type !== 'reset') {
                 throw new Error('Invalid token');
             }
             return await this.userService.updatePassword(decoded.sub, password);

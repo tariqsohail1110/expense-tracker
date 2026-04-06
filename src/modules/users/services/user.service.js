@@ -65,7 +65,9 @@ export class UserService {
 
     async activateUser(id) {
         try {
-            return await this.userRepository.activateUser(id);
+            const parseId = Number(id);
+            validateIntegerValues(parseId);
+            return await this.userRepository.activateUser(parseId);
         }catch(error) {
             throw error;
         }
@@ -73,8 +75,12 @@ export class UserService {
 
     async updatePassword(id, password) {
         try {
+            const parseId = Number(id);
+            validateIntegerValues(parseId);
             const hashedPass = await this.hashingService.hashPassword(password);
-            await this.userRepository.updatePassword(id, hashedPass);
+            await this.userRepository.updatePassword(parseId, hashedPass);
+            const user = await this.userRepository.getById(parseId);
+            notFound(user, 'User');
             return { message: 'Password updated successfully' };
         }catch(error) {
             throw error;

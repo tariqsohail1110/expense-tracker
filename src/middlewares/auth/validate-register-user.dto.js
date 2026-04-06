@@ -46,7 +46,7 @@ export const validateRegisterUserDto = (data) => {
     }else if(data.confirmPass.length > 50) {
         errors.confirmPass = 'Confirm password must be less than 51 characters';
     }else if(typeof data.password === 'string' && data.confirmPass !== data.password) {
-        errors.confirmPass = "Passwords doesn't match";
+        errors.confirmPass = "Passwords don't match";
     }
 
     return {

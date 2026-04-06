@@ -20,7 +20,7 @@ export const validateVerifyOtpDto = (data) => {
     //code
     if(typeof data.code !== 'string') {
         errors.code = 'Invalid otp';
-    }else if(!data.code.length === 6) {
+    }else if(data.code.length !== 6) {
         errors.code = 'Code must be of 6 digits';
     }
 
