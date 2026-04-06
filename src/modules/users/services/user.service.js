@@ -70,4 +70,14 @@ export class UserService {
             throw error;
         }
     }
+
+    async updatePassword(id, password) {
+        try {
+            const hashedPass = await this.hashingService.hashPassword(password);
+            await this.userRepository.updatePassword(id, hashedPass);
+            return { message: 'Password updated successfully' };
+        }catch(error) {
+            throw error;
+        }
+    }
 }

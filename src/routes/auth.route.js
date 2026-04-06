@@ -13,5 +13,6 @@ router.post('/register', validate(validateRegisterUserDto), authenticationContro
 router.post('/login', validate(validateLoginRequestDto), authenticationController.logIn);
 router.post('/verify', validate(validateVerifyOtpDto), authenticationController.verify);
 router.post('/refresh', validate(validateRefreshTokenDto), authenticationController.refresh);
+router.post('/reset', authenticationController.resetPass);
 
 export default router;

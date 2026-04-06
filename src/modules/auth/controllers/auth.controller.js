@@ -52,4 +52,15 @@ export class AuthenticationController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    resetPass = async (req, res) => {
+        try {
+            const { email, password, confirmPass } = req.body;
+            const reset = await this.authenticationService.resetPassword(email, password, confirmPass);
+            res.status(200).json({ data: reset});
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    } 
 }

@@ -75,4 +75,16 @@ export class AuthenticationService {
             throw error;
         }
     }
+
+    async resetPassword(email, password, confirmPass) {
+        try {
+            const user = await this.userService.getByEmail(email);
+            if(password !== confirmPass) {
+                throw new Error("Passwords doesn't match");
+            }
+            return await this.userService.updatePassword(user.id, password);
+        }catch(error) {
+            throw error;
+        }
+    }
 }
