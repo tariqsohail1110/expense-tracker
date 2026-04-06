@@ -1,24 +1,15 @@
-import { RegisterUserDto } from "../../modules/auth/dtos/regiter-user.dto.js";
+import { ResetPasswordDto } from '../../modules/auth/dtos/reset-password.dto.js'
 
-export const validateRegisterUserDto = (data) => {
+export const validateResetPasswordDto = (data) => {
     const errors = {}
-    Object.keys(RegisterUserDto).forEach(field => {
+    Object.keys(ResetPasswordDto).forEach(field => {
         if(!data[field]) {
             errors[field] = `${field} is required`;
         }
     })
-    //name
-    if(typeof data.name !== 'string') {
-        errors.name = 'Name must be a string!';
-    }else if(data.name.length > 100) {
-        errors.name = 'Name must be less than 100 characters';
-    }
-
-    //email
-    if(typeof data.email !== 'string') {
-        errors.email = 'Email must be a string!';
-    }else if(!data.email.includes('@')) {
-        errors.email = 'Invalid Email!';
+    //token
+    if(typeof data.token !== 'string') {
+        errors.token = 'Invalid Token';
     }
 
     //password

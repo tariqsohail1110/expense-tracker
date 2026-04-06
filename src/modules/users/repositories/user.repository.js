@@ -53,4 +53,14 @@ export class UserRepository {
         );
         return result.rows[0];
     }
+
+    async updatePassword(id, password) {
+        const result = await pool.query(
+            "UPDATE users SET password = $1 WHERE id = $2 RETURNING *", [password, id]
+        );
+        if(result.rowCount === 0 || !result.rows[0]) {
+            throw new Error('User not found');
+        }
+        return result.rows[0];
+    }
 }

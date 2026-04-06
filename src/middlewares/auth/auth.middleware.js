@@ -17,7 +17,9 @@ export const authMiddleware = async (req, res, next) => {
     }
     try {
         const key = readPublicKey();
-        const decoded = jwt.verify(token, key);
+        const decoded = jwt.verify(token, key, {
+            algorithms: ['RS256']
+        });
         if(decoded.type !== 'access') {
             return await res.status(401).json({ message: 'Invalid token' });
         }

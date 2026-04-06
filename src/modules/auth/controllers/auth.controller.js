@@ -52,4 +52,37 @@ export class AuthenticationController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    forget = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const forget = await this.authenticationService.forgetPassword(email);
+            res.status(200).json({ data: forget });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    verifyOtpforReset = async (req, res) => {
+        try {
+            const { email, code } = req.body;
+            const verify = await this.authenticationService.verifyOtpForReset(email, code);
+            res.status(200).json({ data: verify });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    resetPass = async (req, res) => {
+        try {
+            const { token, password, confirmPass } = req.body;
+            const reset = await this.authenticationService.resetPassword(token, password, confirmPass);
+            res.status(200).json({ data: reset});
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    } 
 }
