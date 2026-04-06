@@ -3,6 +3,7 @@ import { UserService } from "../../users/services/user.service.js";
 import { JWTService } from "../../../common/jwtService/jwt.service.js";
 import { OtpService } from "../../otp/services/otp.service.js";
 import { OtpPurpose } from "../../../common/enums/enums.js";
+import jwt from 'jsonwebtoken';
 
 export class AuthenticationService {
     constructor() {
@@ -76,13 +77,46 @@ export class AuthenticationService {
         }
     }
 
-    async resetPassword(email, password, confirmPass) {
+    async forgetPassword(email) {
         try {
             const user = await this.userService.getByEmail(email);
-            if(password !== confirmPass) {
-                throw new Error("Passwords doesn't match");
+            await this.otpService.sendOtp(
+                user.id,
+                email,
+                OtpPurpose.PASSWORD_RESET
+            );
+            return { message: 'Otp sent successfully to your email' };
+        }catch(error) {
+            throw error;
+        }
+    }
+
+    async verifyOtpForReset(email, code) {
+        try {
+            const user = await this.userService.getByEmail(email);
+            const verifiedOtp = await this.otpService.verifyAndConsume(
+                user.id,
+                code,
+                OtpPurpose.PASSWORD_RESET
+            );
+            if(!user || !verifiedOtp) {
+                throw new Error("Invalid, please try again");
+            };
+            const refreshToken = await this.jwtService.generateResetToken(user.id, email);
+            return refreshToken;
+        }catch(error) {
+            throw error;
+        }
+    }
+
+    async resetPassword(token, password, confirmPass) {
+        try {
+            const key = this.jwtService.readPublicKey();
+            const decoded = jwt.verify(token, key);
+            if(!decoded || !decoded.type === 'reset') {
+                throw new Error('Invalid token');
             }
-            return await this.userService.updatePassword(user.id, password);
+            return await this.userService.updatePassword(decoded.sub, password);
         }catch(error) {
             throw error;
         }

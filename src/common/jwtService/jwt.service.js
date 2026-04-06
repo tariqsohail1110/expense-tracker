@@ -72,6 +72,24 @@ export class JWTService {
             throw error;
         }
     }
+
+        async generateResetToken(id, email) {
+        try {
+            const payload = {
+                sub: id,
+                email: email,
+                type: 'reset'
+            }
+            const secret = this.readPrivateKey();
+
+            return jwt.sign(payload, secret, {
+                algorithm: 'RS256',
+                expiresIn: process.env.JWT_RESET_EXPIRES_IN
+            });
+        }catch(error) {
+            throw error;
+        }
+    }
 }
 
 // const jwtService = new JWTService();
