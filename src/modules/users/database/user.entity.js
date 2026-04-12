@@ -5,6 +5,7 @@ export const User = {
         name: 'VARCHAR(100) NOT NULL',
         email: 'VARCHAR(50) NOT NULL',
         password: 'TEXT NOT NULL',
+        role: 'VARCHAR(20) DEFAULT "user" CHECK (role IN ("super_admin", "admin", "user"))',
         isActive: 'BOOLEAN DEFAULT FALSE NOT NULL',
         createdAT: 'TIMESTAMP DEFAULT NOW()'
     }
@@ -16,7 +17,8 @@ export const createUserTable = `
         name        VARCHAR(100) NOT NULL,
         email       VARCHAR(50) NOT NULL,
         password    TEXT NOT NULL,
-        is_active  BOOLEAN DEFAULT FALSE NOT NULL,
+        role        VARCHAR(20) DEFAULT 'user' CHECK (role IN ('super_admin', 'admin', 'user')),
+        is_active   BOOLEAN DEFAULT FALSE NOT NULL,
         created_at  TIMESTAMP DEFAULT NOW()
     );
 `

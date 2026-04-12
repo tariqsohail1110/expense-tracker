@@ -13,9 +13,9 @@ export class AuthenticationService {
         this.otpService = new OtpService();
     }
 
-    async registerUser(name, email, password, confirmPass) {
+    async registerUser(name, email, password, confirmPass, role) {
         try{
-            const data = { name, email, password };
+            const data = { name, email, password, role };
             const register = await this.userService.createUser(data);
             return register;
         }catch(error) {
@@ -53,8 +53,8 @@ export class AuthenticationService {
             if(!user || !verifiedOtp) {
                 throw new Error("Invalid, please try again");
             }
-            const accessToken = await this.jwtService.generateAccessToken(user.id, user.email);
-            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email);
+            const accessToken = await this.jwtService.generateAccessToken(user.id, user.email, user.role);
+            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role);
             const { password: _, is_active, ...userWithoutPass } = user;
             if(user.is_active === false) {
                 await this.userService.activateUser(user.id);
@@ -103,7 +103,7 @@ export class AuthenticationService {
             if(!user || !verifiedOtp) {
                 throw new Error("Invalid, please try again");
             };
-            const resetToken = await this.jwtService.generateResetToken(user.id, email);
+            const resetToken = await this.jwtService.generateResetToken(user.id, email, user.role);
             return { resetToken };
         }catch(error) {
             throw new  Error('Invalid, please try again');

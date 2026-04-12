@@ -17,11 +17,12 @@ export class JWTService {
         return fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
     }
 
-    async generateAccessToken(id, email) {
+    async generateAccessToken(id, email, role) {
         try {
             const payload = {
                 sub: id,
                 email: email,
+                role: role,
                 type: 'access'
             }
             const secret = this.readPrivateKey();
@@ -36,11 +37,12 @@ export class JWTService {
         }
     }
 
-    async generateRefreshToken(id, email) {
+    async generateRefreshToken(id, email, role) {
         try {
             const payload = {
                 sub: id,
                 email: email,
+                role: role,
                 type: 'refresh'
             }
             const secret = this.readPrivateKey();
@@ -63,7 +65,8 @@ export class JWTService {
             }
             const newAccessToken = await this.generateAccessToken(
                 payload.sub,
-                payload.email
+                payload.email,
+                payload.role,
             )
             return {
                 accessToken: newAccessToken
@@ -73,11 +76,12 @@ export class JWTService {
         }
     }
 
-        async generateResetToken(id, email) {
+        async generateResetToken(id, email, role) {
         try {
             const payload = {
                 sub: id,
                 email: email,
+                role: role,
                 type: 'reset'
             }
             const secret = this.readPrivateKey();

@@ -24,19 +24,34 @@ export class UserRepository {
     }
 
     async create(data) {
-        const {name, email, password} = data;
+        const {name, email, password, role} = data;
         const result = await pool.query(
-            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [name, email, password]
+            "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, email, password, role]
         );
         return result.rows[0];
     }
 
     async update(id,data) {
-        const {name, email, password} = data;
+        const fields = [];
+        const values = [];
+        let counter = 1;
+        if(data.name !== undefined) {
+            fields.push(`name = $${counter++}`);
+            values.push(data.name);
+        }
+        if(data.email !== undefined) {
+            fields.push(`email = $${counter++}`);
+            values.push(data.email);
+        }
+        if(data.password !== undefined) {
+            fields.push(`password = $${counter++}`);
+            values.push(data.password);
+        }
+        values.push(id);
+
         const result = await pool.query(
-            "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING *", 
-            [name, email, password, id]
+            `UPDATE users SET ${fields.join(', ')} WHERE id = $${counter} RETURNING *`, values
         );
         return result.rows[0];
     }

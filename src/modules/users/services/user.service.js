@@ -27,7 +27,7 @@ export class UserService {
     }
 
     async createUser(data) {
-        const { name, email, password } = data;
+        const { name, email, password, role } = data;
         const existingUser = await this.userRepository.getByEmail(email);
         if(existingUser) {
             throw new Error("Email Already Exists");
@@ -37,6 +37,7 @@ export class UserService {
             name,
             email,
             password: hashedPass,
+            role,
         });
         const { password: _, is_active, ...userWithoutPass} = user;
         return userWithoutPass;

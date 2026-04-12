@@ -53,8 +53,6 @@ export class UserController {
         try {
             const { id } = req.params;
             const data = req.body;
-            // console.log(`Controller - ID: ${id}`);
-            // console.log(`Controller - DATA: ${data}`);
             const user = await this.userService.update(id, data);
             res.status(201).json({ data: UserResponseDto(user) });
         }catch(error) {
@@ -66,6 +64,40 @@ export class UserController {
     deleteUser = async (req, res) => {
         try{
             const { id } = req.params;
+            await this.userService.deleteUser(id);
+            res.status(200).json({ message: "User deleted succesfully!" });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    getMe = async (req, res) => {
+        try {
+            const id = req.user.sub;
+            const user = await this.userService.getById(id);
+            res.status(200).json({ data: UserResponseDto(user)}); 
+        }catch (error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 404;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    updateMe = async (req, res) => {
+        try {
+            const id = req.user.sub;
+            const data = req.body;
+            const user = await this.userService.update(id, data);
+            res.status(201).json({ data: UserResponseDto(user) });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    deleteMe = async (req, res) => {
+        try{
+            const id = req.user.sub;
             await this.userService.deleteUser(id);
             res.status(200).json({ message: "User deleted succesfully!" });
         }catch(error) {
