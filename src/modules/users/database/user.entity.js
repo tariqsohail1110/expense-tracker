@@ -5,7 +5,7 @@ export const User = {
         name: 'VARCHAR(100) NOT NULL',
         email: 'VARCHAR(50) NOT NULL',
         password: 'TEXT NOT NULL',
-        role: 'VARCHAR(20) DEFAULT "user" CHECK (role IN ("super_admin", "admin", "user"))',
+        role: 'VARCHAR(20) DEFAULT \'user\' CHECK (role IN (\'super_admin\', \'admin\', \'user\'))',
         isActive: 'BOOLEAN DEFAULT FALSE NOT NULL',
         createdAT: 'TIMESTAMP DEFAULT NOW()'
     }

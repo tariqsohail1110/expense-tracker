@@ -24,7 +24,7 @@ export class UserRepository {
     }
 
     async create(data) {
-        const {name, email, password, role} = data;
+        const {name, email, password, role} = data; //role will be removed later
         const result = await pool.query(
             "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
             [name, email, password, role]

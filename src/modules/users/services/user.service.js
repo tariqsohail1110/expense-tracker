@@ -27,7 +27,7 @@ export class UserService {
     }
 
     async createUser(data) {
-        const { name, email, password, role } = data;
+        const { name, email, password, role } = data; //role will be removed later
         const existingUser = await this.userRepository.getByEmail(email);
         if(existingUser) {
             throw new Error("Email Already Exists");

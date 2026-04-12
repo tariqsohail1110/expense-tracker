@@ -65,7 +65,7 @@ export class UserController {
         try{
             const { id } = req.params;
             await this.userService.deleteUser(id);
-            res.status(200).json({ message: "User deleted succesfully!" });
+            res.status(200).json({ message: "User deleted successfully!" });
         }catch(error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
@@ -99,7 +99,7 @@ export class UserController {
         try{
             const id = req.user.sub;
             await this.userService.deleteUser(id);
-            res.status(200).json({ message: "User deleted succesfully!" });
+            res.status(200).json({ message: "User deleted successfully!" });
         }catch(error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });

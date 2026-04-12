@@ -15,7 +15,7 @@ export class AuthenticationService {
 
     async registerUser(name, email, password, confirmPass, role) {
         try{
-            const data = { name, email, password, role };
+            const data = { name, email, password, role }; //role will be removed later
             const register = await this.userService.createUser(data);
             return register;
         }catch(error) {

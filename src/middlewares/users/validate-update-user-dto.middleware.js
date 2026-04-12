@@ -21,9 +21,9 @@ export const validateUpdateUserDto = (data) => {
     }
     
     if(data.email !== undefined) {
-        if(data.email.length === 0) {
+        if(typeof data.email !== 'string') {
             errors.email = 'Email cannot be empty'
-        }else if(typeof data.email !== 'string') {
+        }else if(data.email.length === 0) {
             errors.email = 'Email must be a string!';
         }else if(!data.email.includes('@')) {
             errors.email = 'Invalid Email!';
@@ -31,9 +31,9 @@ export const validateUpdateUserDto = (data) => {
     }
 
     if(data.password !== undefined) {
-        if(data.password.length === 0) {
+        if(typeof data.password !== 'string') {
             errors.password = 'Password cannot be empty'
-        }else if(typeof data.password !== 'string') {
+        }else if(data.password.length === 0) {
             errors.password = 'Password must be a string!';
         }else if(data.password.length < 8) {
             errors.password = 'Password should be atleast 8 characters';
