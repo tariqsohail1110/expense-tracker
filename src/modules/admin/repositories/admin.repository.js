@@ -1,38 +1,43 @@
 import pool from "../../../config/db.config.js";
 
-export class UserRepository {
-    async getAll() { 
+export class AdminRepository {
+    async getAllAdmins() {
         const result = await pool.query(
-            "SELECT * FROM users"
+            'SELECT * FROM users WHERE role = \'admin\''
         );
-        // console.log('Result:', result.rows);
         return result.rows;
     }
 
-    async getById(id) {
+    async getAdminById(adminId) {
         const result = await pool.query(
-            "SELECT * FROM users WHERE id = $1", [id]
+            'SELECT * FROM users WHERE id = $1 AND role = \'admin\'', [adminId]
         );
         return result.rows[0];
     }
 
-    async getByEmail(email) {
+    async getAdminByEmail(email) {
         const result = await pool.query(
-            "SELECT * FROM users WHERE email = $1", [email]
+            'SELECT * FROM users WHERE email = $1 AND role = \'admin\'', [email]
         );
         return result.rows[0];
     }
 
-    async create(data) {
-        const {name, email, password} = data;
+    async getSuperAdminByEmail(email) {
         const result = await pool.query(
-            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [name, email, password]
+            'SELECT * FROM users WHERE email = $1 AND role = \'super_admin\'', [email]
         );
         return result.rows[0];
     }
 
-    async update(id,data) {
+    async createAdmin(data) {
+        const { name, email, password, role } = data;
+        const result = await pool.query(
+            'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *', [name, email, password, role]
+        );
+        return result.rows[0];
+    }
+
+    async updateAdmin(id, data) {
         const fields = [];
         const values = [];
         let counter = 1;
@@ -56,32 +61,16 @@ export class UserRepository {
         return result.rows[0];
     }
 
-    async delete(id) {
+    async changeRole(id, role) {
         const result = await pool.query(
-            "DELETE FROM users WHERE id = $1 RETURNING *", [id]
-        );
-    }
-
-    async activateUser(id) {
-        const result = await pool.query(
-            "UPDATE users SET is_active = true WHERE id = $1 RETURNING *", [id]
+            'UPDATE users SET role = $1 WHERE id = $2 RETURNING *', [role, id]
         );
         return result.rows[0];
     }
 
-    async updatePassword(id, password) {
+    async deleteAdmin(id) {
         const result = await pool.query(
-            "UPDATE users SET password = $1 WHERE id = $2 RETURNING *", [password, id]
-        );
-        if(result.rowCount === 0 || !result.rows[0]) {
-            throw new Error('User not found');
-        }
-        return result.rows[0];
-    }
-
-    async deactivateUser(id) {
-        const result = await pool.query(
-            'UPDATE users SET is_active = false WHERE id = $1 RETURNING *', [id]
+            'DELETE FROM users WHERE id = $1 AND role = \'admin\'', [id]
         );
         return result.rows[0];
     }

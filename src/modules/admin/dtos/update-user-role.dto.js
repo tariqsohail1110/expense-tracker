@@ -1,0 +1,3 @@
+const UpdateUserRole = {
+    role: 'string'
+}

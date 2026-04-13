@@ -16,10 +16,10 @@ router.patch('/me', authMiddleware, validate(validateUpdateUserDto), hasAnyPermi
 router.delete('/me', authMiddleware, hasAnyPermission(Permissions.DELETE_OWN_PROFILE), userController.deleteMe)
 
 // admin routes (dynamic last)
+router.post('/', authMiddleware, hasAnyPermission(Permissions.CREATE_USER), validate(validateCreateUserDto), userController.createUser)
 router.get('/', authMiddleware, hasAnyPermission(Permissions.READ_ALL_USERS), userController.getAllUsers)
 router.get('/email', authMiddleware, hasAnyPermission(Permissions.GET_ANY_USER), userController.getByEmail)
 router.get('/:id', authMiddleware, hasAnyPermission(Permissions.GET_ANY_USER), userController.getById)
-router.post('/', authMiddleware, hasAnyPermission(Permissions.CREATE_USER), validate(validateCreateUserDto), userController.createUser)
 router.patch('/:id', authMiddleware, validate(validateUpdateUserDto), hasAnyPermission(Permissions.UPDATE_ANY_USER), userController.updateUser)
 router.delete('/:id', authMiddleware, hasAnyPermission(Permissions.DELETE_ANY_USER), userController.deleteUser)
 

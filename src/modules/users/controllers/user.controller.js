@@ -29,7 +29,6 @@ export class UserController {
     getByEmail = async (req, res) => {
         try {
             const { email } = req.query;
-            // console.log(`Email received ${email}`);
             const user = await this.userService.getByEmail(email);
             res.status(200).json({ data: UserResponseDto(user) });
         }catch(error) {
