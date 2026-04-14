@@ -3,7 +3,7 @@ import pool from "../../../config/db.config.js";
 export class UserRepository {
     async getAll() { 
         const result = await pool.query(
-            "SELECT * FROM users WHERE role = \'user\'"
+            "SELECT * FROM users WHERE role = $1", ['user']
         );
         // console.log('Result:', result.rows);
         return result.rows;
@@ -58,8 +58,9 @@ export class UserRepository {
 
     async delete(id) {
         const result = await pool.query(
-            "DELETE FROM users WHERE id = $1 RETURNING *", [id]
+            "DELETE FROM users WHERE id = $1 AND role = $2 RETURNING *", [id, 'user']
         );
+        return result.rows[0];
     }
 
     async activateUser(id) {
@@ -81,7 +82,7 @@ export class UserRepository {
 
     async deactivateUser(id) {
         const result = await pool.query(
-            'UPDATE users SET is_active = false WHERE id = $1 RETURNING *', [id]
+            'UPDATE users SET is_active = false WHERE id = $1 AND role = $2 RETURNING *', [id, 'user']
         );
         return result.rows[0];
     }

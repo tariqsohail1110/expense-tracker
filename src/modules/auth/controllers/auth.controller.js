@@ -8,7 +8,7 @@ export class AuthenticationController {
     register = async (req, res) => {
         try {
             const data = req.body;
-            const register = await this.authenticationService.registerUser(data.name, data.email, data.password, data.confirmPass, data.role); //role will be removed later
+            const register = await this.authenticationService.registerUser(data.name, data.email, data.password, data.confirmPass);
             res.status(200).json({ data: register });
         }catch(error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;

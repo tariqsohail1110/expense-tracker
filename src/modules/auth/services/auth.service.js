@@ -13,9 +13,9 @@ export class AuthenticationService {
         this.otpService = new OtpService();
     }
 
-    async registerUser(name, email, password, confirmPass, role) {
+    async registerUser(name, email, password, confirmPass) {
         try{
-            const data = { name, email, password, role }; //role will be removed later
+            const data = { name, email, password };
             const register = await this.userService.createUser(data);
             return register;
         }catch(error) {
