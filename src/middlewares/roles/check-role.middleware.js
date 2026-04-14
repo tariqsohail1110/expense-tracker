@@ -1,5 +1,3 @@
-import { Roles } from '../../common/enums/enums.js'
-
 export const hasRole = (...allowedRoles) => {
     return (req, res, next) => {
         if(!req.user) {

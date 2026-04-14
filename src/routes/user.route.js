@@ -10,10 +10,10 @@ const router = Router();
 const userController = new UserController();
 
 router.use(authMiddleware);
-router.use(hasRole(Roles.USER));
+router.use(hasRole(Roles.USER, Roles.ADMIN));
 
-router.get('/me', authMiddleware, userController.getMe)
-router.patch('/me', authMiddleware, validate(validateUpdateUserDto), userController.updateMe)
-router.delete('/me', authMiddleware, userController.deleteMe)
+router.get('/me', userController.getMe);
+router.patch('/me', validate(validateUpdateUserDto), userController.updateMe);
+router.delete('/me', userController.deleteMe);
 
 export default router;

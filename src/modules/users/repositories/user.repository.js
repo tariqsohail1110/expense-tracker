@@ -11,14 +11,14 @@ export class UserRepository {
 
     async getById(id) {
         const result = await pool.query(
-            "SELECT * FROM users WHERE id = $1 AND role = $2", [id, 'user']
+            "SELECT * FROM users WHERE id = $1", [id]
         );
         return result.rows[0];
     }
 
     async getByEmail(email) {
         const result = await pool.query(
-            "SELECT * FROM users WHERE email = $1 AND role = $2", [email, 'user']
+            "SELECT * FROM users WHERE email = $1", [email]
         );
         return result.rows[0];
     }
@@ -51,7 +51,7 @@ export class UserRepository {
         values.push(id);
 
         const result = await pool.query(
-            `UPDATE users SET ${fields.join(', ')} WHERE id = $${counter} AND role = 'user' RETURNING *`, values
+            `UPDATE users SET ${fields.join(', ')} WHERE id = $${counter} RETURNING *`, values
         );
         return result.rows[0];
     }
@@ -65,14 +65,14 @@ export class UserRepository {
 
     async activateUser(id) {
         const result = await pool.query(
-            "UPDATE users SET is_active = true WHERE id = $1 AND role = $2 RETURNING *", [id, 'user']
+            "UPDATE users SET is_active = true WHERE id = $1 RETURNING *", [id]
         );
         return result.rows[0];
     }
 
     async updatePassword(id, password) {
         const result = await pool.query(
-            "UPDATE users SET password = $1 WHERE id = $2 AND role = $3 RETURNING *", [password, id, 'role']
+            "UPDATE users SET password = $1 WHERE id = $2 RETURNING *", [password, id]
         );
         if(result.rowCount === 0 || !result.rows[0]) {
             throw new Error('User not found');
