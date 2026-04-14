@@ -8,7 +8,7 @@ import authenticationRouter from './routes/auth.route.js';
 import adminRouter from './routes/admin.route.js'
 import { initDB } from './config/db.config.js';
 import bearerToken from 'express-bearer-token';
-import { SuperAdminSeeder } from './modules/admin/seed/super-admin.seeder.js';
+import { SuperAdminSeeder } from './modules/admin/seeder/admin.seeder.js';
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/users', userRouter);
 app.use('/expenses', expenseRouter);
 app.use('/auth', authenticationRouter);
-app.use('/admins', adminRouter);
+app.use('/admin', adminRouter);
 
 await initDB();
 

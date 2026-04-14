@@ -3,7 +3,7 @@ import pool from "../../../config/db.config.js";
 export class UserRepository {
     async getAll() { 
         const result = await pool.query(
-            "SELECT * FROM users"
+            "SELECT * FROM users WHERE role = \'user\'"
         );
         // console.log('Result:', result.rows);
         return result.rows;

@@ -60,6 +60,17 @@ export class UserController {
         }
     }
 
+    deactivateUser = async (req, res) => {
+        try {
+            const { id } = req.params;
+            await this.userService.deactivateUser(id);
+            res.status(200).json({ message: 'User deactivated successfully!' });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
     deleteUser = async (req, res) => {
         try{
             const { id } = req.params;

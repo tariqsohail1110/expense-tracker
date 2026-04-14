@@ -21,16 +21,9 @@ export const Permissions = Object.freeze({
     MANAGE_OWN_BUDGET: 'manage_own_budget',
 
     //Admin
-    READ_ALL_USERS: 'get_all_users',
-    GET_ANY_USER: 'get_any_user',
-    CREATE_USER: 'create_user',
-    UPDATE_ANY_USER: 'update_any_user',
-    DELETE_ANY_USER: 'delete_any_user',
+    MANAGE_ANY_USER: 'manage_any_user',
     READ_ALL_EXPENSES: 'read_all_expenses',
     READ_ALL_BUDGETS: 'read_all_budgets',
-
-    //SuperAdmin
-    MANAGE_ALL_ADMINS: 'manage_all_admins'
 });
 
 //Mapping permissions to roles
@@ -47,16 +40,8 @@ export const RolePermissions = Object.freeze({
         Permissions.UPDATE_OWN_PROFILE,
         Permissions.DELETE_OWN_PROFILE,
         Permissions.GET_OWN_PROFILE,
-        Permissions.READ_ALL_USERS,
-        Permissions.GET_ANY_USER,
-        Permissions.CREATE_USER,
-        Permissions.UPDATE_ANY_USER,
-        Permissions.DELETE_ANY_USER,
+        Permissions.MANAGE_ANY_USER,
         Permissions.READ_ALL_EXPENSES,
         Permissions.READ_ALL_BUDGETS
-    ],
-
-    [Roles.SUPER_ADMIN]: [
-        ...Object.values(Permissions)
     ]
-})
+});

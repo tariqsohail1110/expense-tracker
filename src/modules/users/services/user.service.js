@@ -67,8 +67,18 @@ export class UserService {
     async activateUser(id) {
         try {
             const parseId = Number(id);
-            validateIntegerValues(parseId);
+            validateIntegerValues(parseId, "UserID");
             return await this.userRepository.activateUser(parseId);
+        }catch(error) {
+            throw error;
+        }
+    }
+
+    async deactivateUser(id) {
+        try {
+            const parseId = Number(id);
+            validateIntegerValues(parseId, "User ID");
+            return await this.userRepository.deactivateUser(parseId);
         }catch(error) {
             throw error;
         }

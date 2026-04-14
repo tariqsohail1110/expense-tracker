@@ -1,3 +1,0 @@
-const UpdateUserRole = {
-    role: 'string'
-}
