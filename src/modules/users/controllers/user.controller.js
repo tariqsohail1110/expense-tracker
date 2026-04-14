@@ -29,7 +29,6 @@ export class UserController {
     getByEmail = async (req, res) => {
         try {
             const { email } = req.query;
-            // console.log(`Email received ${email}`);
             const user = await this.userService.getByEmail(email);
             res.status(200).json({ data: UserResponseDto(user) });
         }catch(error) {
@@ -55,6 +54,17 @@ export class UserController {
             const data = req.body;
             const user = await this.userService.update(id, data);
             res.status(201).json({ data: UserResponseDto(user) });
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
+
+    deactivateUser = async (req, res) => {
+        try {
+            const { id } = req.params;
+            await this.userService.deactivateUser(id);
+            res.status(200).json({ message: 'User deactivated successfully!' });
         }catch(error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });

@@ -27,19 +27,18 @@ export class UserService {
     }
 
     async createUser(data) {
-        const { name, email, password, role } = data; //role will be removed later
+        const { name, email, password, } = data;
         const existingUser = await this.userRepository.getByEmail(email);
         if(existingUser) {
-            throw new Error("Email Already Exists");
+            throw new Error("User Already Exists");
         }
         const hashedPass = await this.hashingService.hashPassword(password);
         const user = await this.userRepository.create({
             name,
             email,
             password: hashedPass,
-            role,
         });
-        const { password: _, is_active, ...userWithoutPass} = user;
+        const { password: _, is_active, role, ...userWithoutPass} = user;
         return userWithoutPass;
     }
 
@@ -48,11 +47,12 @@ export class UserService {
         validateIntegerValues(parseId, "User ID");
         const user = await this.userRepository.getById(parseId);
         notFound(user, "User");
-        if(data.password) {
-            data.password = await this.hashingService.hashPassword(data.password);
+        const updatedData = { ...data };
+        if(updatedData.password) {
+            updatedData.password = await this.hashingService.hashPassword(updatedData.password);
         }
-        const updatedUser = await this.userRepository.update(parseId, data);
-        const { password: _, ...userWithoutPass } = updatedUser;
+        const updatedUser = await this.userRepository.update(parseId, updatedData);
+        const { password: _, is_active, role, ...userWithoutPass } = updatedUser;
         return userWithoutPass;
     }
 
@@ -67,8 +67,19 @@ export class UserService {
     async activateUser(id) {
         try {
             const parseId = Number(id);
-            validateIntegerValues(parseId);
+            validateIntegerValues(parseId, "UserID");
             return await this.userRepository.activateUser(parseId);
+        }catch(error) {
+            throw error;
+        }
+    }
+
+    async deactivateUser(id) {
+        try {
+            const parseId = Number(id);
+            validateIntegerValues(parseId, "User ID");
+            notFound(parseId, "User");
+            return await this.userRepository.deactivateUser(parseId);
         }catch(error) {
             throw error;
         }

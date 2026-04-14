@@ -5,8 +5,10 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import userRouter from './routes/user.route.js';
 import expenseRouter from './routes/expense.route.js';
 import authenticationRouter from './routes/auth.route.js';
+import adminRouter from './routes/admin.route.js';
 import { initDB } from './config/db.config.js';
 import bearerToken from 'express-bearer-token';
+import { AdminSeeder } from './modules/admin/seeder/admin.seeder.js';
 
 dotenv.config();
 
@@ -25,14 +27,20 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
+
+
 app.use(express.json());
 app.use(bearerToken());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/users', userRouter);
 app.use('/expenses', expenseRouter);
 app.use('/auth', authenticationRouter);
+app.use('/admin', adminRouter);
 
-initDB();
+await initDB();
+
+const seeder = new AdminSeeder();
+await seeder.seed();
 
 app.get('/', (req, res) => {
     res.json({ message: 'Expense Tracker API is running' });

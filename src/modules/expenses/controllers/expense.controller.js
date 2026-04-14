@@ -6,7 +6,7 @@ export class ExpenseController {
         this.expenseService = new ExpenseService();
     }
 
-    getAllExpenses = async (req, res) => {
+    getExpensesByUserId = async (req, res) => {
         try {
             const { userId } = req.params;
             const expenses = await this.expenseService.getAllExpenses(userId);
@@ -30,7 +30,7 @@ export class ExpenseController {
         }
     }
 
-    getExpenseById = async (req, res) => {
+    getExpenseByUserId = async (req, res) => {
         try {
             const { id } = req.params;
             const { user_id } = req.query;
@@ -58,7 +58,8 @@ export class ExpenseController {
 
     createExpense = async (req, res) => {
         try {
-            const { user_id, ...data } = req.body;
+            const user_id = req.user.sub;
+            const { ...data } = req.body;
             const expense = await this.expenseService.createExpense(user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
@@ -70,7 +71,8 @@ export class ExpenseController {
     updateExpense = async (req, res) => {
         try {
             const { id } = req.params;
-            const { user_id, ...data } = req.body;
+            const user_id = req.user.sub;
+            const { ...data } = req.body;
             const expense = await this.expenseService.updateExpense(id, user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
         }catch(error) {
@@ -82,8 +84,7 @@ export class ExpenseController {
     deleteExpense = async (req, res) => {
         try {
             const { id } = req.params;
-            const{ user_id } = req.query;
-            console.log("userID: ", user_id);
+            const user_id = req.user.sub;
             await this.expenseService.deleteExpense(id, user_id);
             res.status(200).json({ message: "Expense deleted successfully!" });
         }catch(error) {

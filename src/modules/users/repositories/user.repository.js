@@ -3,7 +3,7 @@ import pool from "../../../config/db.config.js";
 export class UserRepository {
     async getAll() { 
         const result = await pool.query(
-            "SELECT * FROM users"
+            "SELECT * FROM users WHERE role = \'user\'"
         );
         // console.log('Result:', result.rows);
         return result.rows;
@@ -24,10 +24,10 @@ export class UserRepository {
     }
 
     async create(data) {
-        const {name, email, password, role} = data; //role will be removed later
+        const {name, email, password} = data;
         const result = await pool.query(
-            "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
-            [name, email, password, role]
+            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
+            [name, email, password]
         );
         return result.rows[0];
     }
@@ -76,6 +76,13 @@ export class UserRepository {
         if(result.rowCount === 0 || !result.rows[0]) {
             throw new Error('User not found');
         }
+        return result.rows[0];
+    }
+
+    async deactivateUser(id) {
+        const result = await pool.query(
+            'UPDATE users SET is_active = false WHERE id = $1 RETURNING *', [id]
+        );
         return result.rows[0];
     }
 }
