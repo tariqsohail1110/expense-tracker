@@ -19,12 +19,12 @@ router.post('/users', hasAnyPermission(Permissions.MANAGE_ANY_USER), validate(va
 router.get('/users', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.getAllUsers);
 router.get('/users/email', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.getByEmail);
 router.get('/users/:id', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.getById);
-router.patch('/users/:id', validate(validateUpdateUserDto), hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.updateUser);
-router.patch('/users/de_activate/:id', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.deactivateUser);
+router.patch('/users/:id', hasAnyPermission(Permissions.MANAGE_ANY_USER), validate(validateUpdateUserDto), userController.updateUser);
+router.patch('/users/:id/deactivate', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.deactivateUser);
 router.delete('/users/:id', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.deleteUser);
 
 //expense routes
-router.get('/expenses_all/:userId', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getAllExpenses);
-router.get('/expenses/:id', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getExpenseById);
+router.get('/expensesall/:userId', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getExpensesByUserId);
+router.get('/expenses/:id', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getExpenseByUserId);
 
 export default router;

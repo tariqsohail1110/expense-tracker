@@ -78,6 +78,7 @@ export class UserService {
         try {
             const parseId = Number(id);
             validateIntegerValues(parseId, "User ID");
+            notFound(parseId, "User");
             return await this.userRepository.deactivateUser(parseId);
         }catch(error) {
             throw error;

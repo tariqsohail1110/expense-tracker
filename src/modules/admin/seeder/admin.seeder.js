@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export class SuperAdminSeeder {
+export class AdminSeeder {
     constructor() {
         this.hashingService = new HashingService();
     }
