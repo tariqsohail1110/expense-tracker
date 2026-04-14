@@ -24,7 +24,7 @@ router.patch('/users/de_activate/:id', hasAnyPermission(Permissions.MANAGE_ANY_U
 router.delete('/users/:id', hasAnyPermission(Permissions.MANAGE_ANY_USER), userController.deleteUser);
 
 //expense routes
-router.get('/expenses/:userId', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getAllExpenses);
+router.get('/expenses_all/:userId', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getAllExpenses);
 router.get('/expenses/:id', hasAnyPermission(Permissions.READ_ALL_EXPENSES), expenseController.getExpenseById);
 
 export default router;
