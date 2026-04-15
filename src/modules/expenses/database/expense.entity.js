@@ -7,7 +7,7 @@ export const Expense = {
         amount: 'NUMERIC(10, 2) NOT NULL',
         category: `VARCHAR(50) CHECK (category IN
             ('Food', 'Transport', 'Shopping', 'Health', 'Entertainment', 'Bills', 'Others'))`,
-        date: 'DATE NOT NULL',
+        date: 'VARCHAR(20) NOT NULL',
         note: 'VARCHAR(300)',
         createdAt: 'TIMESTAMP DEFUALT NOW()',
     }
@@ -21,7 +21,7 @@ export const createExpenseTable = `
         amount     NUMERIC(10, 2) NOT NULL,
         category   VARCHAR(50) CHECK (category IN
                     ('Food', 'Transport', 'Shopping', 'Health', 'Entertainment', 'Bills', 'Others')),
-        date       DATE NOT NULL,
+        date       VARCHAR(20) NOT NULL,
         note       VARCHAR(300),
         created_at TIMESTAMP DEFAULT NOW()
     );
