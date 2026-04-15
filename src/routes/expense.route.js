@@ -16,7 +16,7 @@ router.use(hasRole(Roles.USER));
 router.post('/', validate(validateCreateExpenseDto), expenseController.createExpense);
 router.get('/user/me', expenseController.getAllOwnExpenses);
 router.get('/me/:id', expenseController.getOwnExpenseById)
-router.put('/:id', validate(validateUpdateExpenseDto), expenseController.updateExpense);
+router.patch('/:id', validate(validateUpdateExpenseDto), expenseController.updateExpense);
 router.delete('/:id', expenseController.deleteExpense);
 
 
