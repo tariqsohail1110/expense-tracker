@@ -3,7 +3,7 @@ import pool from '../../../config/db.config.js'
 export class BudgetRepository {
     async getBudgetByUserId(userId) {
         const result = await pool.query(
-            `SELECT * FROM budget WHERE user_id = $1`, [userId]
+            `SELECT * FROM budgets WHERE user_id = $1`, [userId]
         );
         return result.rows[0];
     }
@@ -11,7 +11,7 @@ export class BudgetRepository {
     async createBudget(userId, data) {
         const { totalBudget, remainingBudget } = data;
         const result = await pool.query(
-            `INSERT INTO budget (user_id, total_budget, remaining_budget) VALUES ($1, $2, $3) RETURNING *`, [userId, totalBudget, remainingBudget]
+            `INSERT INTO budgets (user_id, total_budget, remaining_budget) VALUES ($1, $2, $3) RETURNING *`, [userId, totalBudget, remainingBudget]
         );
         return result.rows[0];
     }
@@ -19,21 +19,28 @@ export class BudgetRepository {
     async updateMyBudget(userId, data) {
         const { totalBudget, remainingBudget } = data;
         const result = await pool.query(
-            `UPDATE budget SET total_budget = $1, remaining_budget = $2 WHERE user_id = $3 RETURNING *`, [totalBudget, remainingBudget, userId]
+            `UPDATE budgets SET total_budget = $1, remaining_budget = $2 WHERE user_id = $3 RETURNING *`, [totalBudget, remainingBudget, userId]
+        );
+        return result.rows[0];
+    }
+
+    async deductFromBudget(client, userId, amount) {
+        const result = await client.query(
+            `UPDATE budgets SET remaining_budget = remaining_budget - $1 WHERE user_id = $2 RETURNING *`, [amount, userId]
         );
         return result.rows[0];
     }
 
     async updateBudget(userId, remainingBudget) {
         const result = await pool.query(
-            `UPDATE budget SET remaining_budget = $2 WHERE user_id = $1 RETURNING *`, [userId, remainingBudget]
+            `UPDATE budgets SET remaining_budget = $2 WHERE user_id = $1 RETURNING *`, [userId, remainingBudget]
         );
         return result.rows[0];
     }
 
     async deleteBudget(userId) {
         const result = await pool.query(
-            `DELETE FROM budget WHERE user_id = $1 RETURNING *`, [userId]
+            `DELETE FROM budgets WHERE user_id = $1 RETURNING *`, [userId]
         );
         return result.rows[0];
     }

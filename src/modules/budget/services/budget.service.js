@@ -32,7 +32,6 @@ export class BudgetService {
             const existingBudget = await this.budgetRepository.getBudgetByUserId(parseUserId);
             if(existingBudget !== undefined) {
                 throw new Error('Budget already exists, can not create a new one');
-                return;
             }
             const data = { totalBudget, remainingBudget: totalBudget };
             const budget = await this.budgetRepository.createBudget(parseUserId, data);
@@ -45,13 +44,12 @@ export class BudgetService {
 
     async updateMyBudget(userId, totalBudget) {
         try {
-            const budget = await this.budgetRepository.getBudgetByUserId(userId);
+            const budget = await this.getBudgetByUserId(userId);
             const parsedTotal = parseFloat(budget.total_budget);
             const parsedRem = parseFloat(budget.remaining_budget);
             const newTotal = parsedTotal + totalBudget;
             const newRemBudget = parsedRem + totalBudget;
             const data = { totalBudget: newTotal, remainingBudget: newRemBudget };
-            console.log(data);
             const updatedBudget = await this.budgetRepository.updateMyBudget(budget.user_id, data);
             return updatedBudget;
         }catch(error) {

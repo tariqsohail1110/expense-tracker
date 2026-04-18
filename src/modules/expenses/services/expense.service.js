@@ -4,6 +4,7 @@ import { BudgetRepository } from "../../budget/repositories/budget.repository.js
 import { BudgetService } from "../../budget/services/budget.service.js";
 import { UserRepository } from "../../users/repositories/user.repository.js";
 import { ExpenseRepository } from "../repositories/expense.repository.js";
+import { withTransaction } from "../../../config/db.config.js";
 
 export class ExpenseService {
     constructor() {
@@ -57,18 +58,11 @@ export class ExpenseService {
             if(remainingBudget < 0) {
                 throw new Error('No negative balance allowed');
             }
-            const newExpense = await this.expenseRepository.create(
-                parseId,
-                {
-                    title,
-                    amount,
-                    category,
-                    date,
-                    note,
-                }
-            )
-            await this.budgetService.updateBudgetFromExpense(parseId, remainingBudget);
-            return newExpense;
+            return await withTransaction(async (client) => {
+                const newExpense = await this.expenseRepository.createWithClient(client, parseId, data);
+                await this.budgetRepository.deductFromBudget(client, userId, data.amount);
+                return newExpense;
+            });
         }catch(error) {
             throw error;
         }
@@ -86,11 +80,11 @@ export class ExpenseService {
             notFound(existingExpense, 'Expense');
             if(data.amount !== undefined) {
                 const budget = await this.budgetRepository.getBudgetByUserId(parseUserId);
-                const parsedRem = parseFloat(budget.remaining_budget);
-                const parsedExp = parseFloat(existingExpense.amount);
                 if(!budget || budget === undefined) {
                     throw new Error('No budget found, please define your budget');
                 }
+                const parsedRem = parseFloat(budget.remaining_budget);
+                const parsedExp = parseFloat(existingExpense.amount);
                 let remainingBudget;
                 if(data.amount > parsedExp) {
                     remainingBudget = parsedRem - (data.amount - parsedExp);
@@ -119,6 +113,9 @@ export class ExpenseService {
             const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
             notFound(existingExpense, 'Expense');
             const budget = await this.budgetRepository.getBudgetByUserId(parseUserId);
+            if(!budget || budget === undefined) {
+                throw new Error('No budget found, please define your budget')
+            }
             const parsedRem = parseFloat(budget.remaining_budget);
             const parsedExp = parseFloat(existingExpense.amount);
             const updatedAmount = parsedRem + parsedExp;

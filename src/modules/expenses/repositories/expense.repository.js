@@ -15,9 +15,18 @@ export class ExpenseRepository {
         return result.rows[0];
     }
 
-    async create(userId, data) {
+    // async create(userId, data) {
+    //     const {title, amount, category, date, note} = data;
+    //     const result = await pool.query(
+    //         "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
+    //         [userId, title, amount, category, date, note]
+    //     );
+    //     return result.rows[0];
+    // }
+
+    async createWithClient(client, userId, data) {
         const {title, amount, category, date, note} = data;
-        const result = await pool.query(
+        const result = await client.query(
             "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
             [userId, title, amount, category, date, note]
         );

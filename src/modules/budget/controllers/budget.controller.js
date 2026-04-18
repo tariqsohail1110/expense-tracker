@@ -12,7 +12,7 @@ export class BudgetController {
             const budget = await this.budgetService.getBudgetByUserId(userId);
             res.status(200).json({ data: BudgetResponseDto(budget) });
         }catch(error) {
-            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 404;
             res.status(statusCode).json({ message: error.message });
         }
     }
@@ -48,7 +48,7 @@ export class BudgetController {
             res.status(200).json({ message: 'Budget deleted successfully' });
         }catch(error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
-            res.status(statusCode).json({ mesage: error.message });
+            res.status(statusCode).json({ message: error.message });
         }
     }
 }
