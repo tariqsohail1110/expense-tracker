@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { createUserTable } from '../modules/users/database/user.entity.js'
 import { createExpenseTable } from '../modules/expenses/database/expense.entity.js';
 import { createOtpTable } from '../modules/otp/database/otp.entity.js';
+import { createBudgetTable } from '../modules/budget/database/budget.entity.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ export const initDB = async () => {
     await pool.query(createUserTable);
     await pool.query(createExpenseTable);
     await pool.query(createOtpTable);
+    await pool.query(createBudgetTable);
     console.log('Tables Initialized');
 }
 
