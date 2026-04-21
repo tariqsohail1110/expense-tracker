@@ -6,6 +6,7 @@ import userRouter from './routes/user.route.js';
 import expenseRouter from './routes/expense.route.js';
 import authenticationRouter from './routes/auth.route.js';
 import adminRouter from './routes/admin.route.js';
+import budgetRouter from './routes/budget.route.js';
 import { initDB } from './config/db.config.js';
 import bearerToken from 'express-bearer-token';
 import { AdminSeeder } from './modules/admin/seeder/admin.seeder.js';
@@ -36,6 +37,7 @@ app.use('/users', userRouter);
 app.use('/expenses', expenseRouter);
 app.use('/auth', authenticationRouter);
 app.use('/admin', adminRouter);
+app.use('/budget', budgetRouter);
 
 await initDB();
 
