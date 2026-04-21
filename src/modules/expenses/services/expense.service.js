@@ -2,6 +2,7 @@ import { notFound } from "../../../common/errors/not-exist.error.js";
 import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
 import { UserRepository } from "../../users/repositories/user.repository.js";
 import { ExpenseRepository } from "../repositories/expense.repository.js";
+import excelJs from 'exceljs';
 
 export class ExpenseService {
     constructor() {
@@ -70,5 +71,34 @@ export class ExpenseService {
         const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
         notFound(existingExpense, 'Expense');
         return await this.expenseRepository.delete(parseId, parseUserId);
+    }
+
+    async exportExpensesXlsx(userId) {
+        try {
+            const expenses = await this.getAllExpenses(userId);
+            const workbook = new excelJs.Workbook();
+            const worksheet = workbook.addWorksheet('My Expenses');
+            worksheet.columns = [
+                { header: 'S.No', key: 's_no', width: 10 },
+                { header: 'Title', key: 'title', width: 20 },
+                { header: 'Amount', key: 'amount', width: 25 },
+                { header: 'Category', key: 'category', width: 20 },
+                { header: 'Date', key: 'date', width: 20 },
+                { header: 'Note', key: 'note', width: 70 },
+            ];
+            let count = 1;
+            expenses.forEach((expense) => {
+                expense.s_no = count;
+                worksheet.addRow(expense);
+                count++;
+            });
+            worksheet.getRow(1).eachCell((cell) => {
+                cell.font = { bold: true };
+            });
+            const buffer = await workbook.xlsx.writeBuffer('expenses.xlsx');
+            return buffer;
+        }catch (error) {
+            throw error;
+        }
     }
 }

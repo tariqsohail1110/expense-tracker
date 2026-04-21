@@ -92,4 +92,17 @@ export class ExpenseController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    exportExpenseXlsx = async (req, res) => {
+        try {
+            const user_id = req.user.sub;
+            const buffer = await this.expenseService.exportExpensesXlsx(user_id);
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=expenses.xlsx');
+            res.status(200).send(buffer);
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
 }
