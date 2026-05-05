@@ -517,22 +517,6 @@ async generateRefreshToken(id, email, role)
 - Prevents invalid data entry
 - Sanitizes input to prevent injection attacks
 
-### 7. Environment Variables
-**Configuration**: `.env` file (not included in repository)
-
-```
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=password
-DB_NAME=expense_tracker
-PORT=3000
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-password
-```
-
 ---
 
 ## Error Handling
@@ -583,33 +567,7 @@ try {
 - Automatic table creation on startup
 - Transaction support with rollback
 
-#### 2. **Environment Configuration** (`.env`)
-```
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=your-password
-DB_NAME=expense_tracker
-
-# Server
-PORT=3000
-
-# JWT
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-
-# Email Service
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-
-# Application
-NODE_ENV=development
-```
-
-#### 3. **Swagger Configuration** (`src/app.js`)
+#### 2. **Swagger Configuration** (`src/app.js`)
 - OpenAPI 3.0.0 specification
 - Endpoint documentation at `/api-docs`
 - Automatic API schema generation from JSDoc comments
@@ -835,6 +793,6 @@ This Personal Expense Tracker application demonstrates a robust, secure, and sca
 
 ---
 
-**Document Version**: 1.0  
+**Document Version**: 2.0  
 **Last Updated**: May 5, 2026  
-**Maintained By**: Development Team
+**Maintained By**: Muhammad Tariq Sohail
