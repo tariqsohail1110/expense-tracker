@@ -9,10 +9,11 @@ export class ExpenseController {
     getExpensesByUserId = async (req, res) => {
         try {
             const { userId } = req.params;
-            const expenses = await this.expenseService.getAllExpenses(userId);
-            // console.log('expenses: ', expenses);
-            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)) });
-        }catch(error) {
+            const page = req.query.page || 1;
+            const limit = req.query.limit || 5;
+            const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId, page, limit);
+            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
             res.status(statusCode).json({ message: error.message });
         }
@@ -20,11 +21,12 @@ export class ExpenseController {
 
     getAllOwnExpenses = async (req, res) => {
         try {
-            const userId  = req.user.sub;
-            const expenses = await this.expenseService.getAllExpenses(userId);
-            // console.log('expenses: ', expenses);
-            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)) });
-        }catch(error) {
+            const userId = req.user.sub;
+            const page = (req.query.page) || 1;
+            const limit = (req.query.limit) || 10;
+            const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId, page, limit);
+            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
             res.status(statusCode).json({ message: error.message });
         }
