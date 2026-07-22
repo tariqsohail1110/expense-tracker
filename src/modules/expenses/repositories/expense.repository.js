@@ -2,6 +2,16 @@ import pool from "../../../config/db.config.js";
 
 export class ExpenseRepository {
     async getAll(userId, page, limit) {
+        if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
+            const result = await pool.query(
+                "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC", [userId]
+            );
+            return {
+                data: result.rows,
+                pagination: null
+            };
+        }
+
         const offset = (page - 1) * limit;
         const result = await pool.query(
             "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset] 
