@@ -131,7 +131,7 @@ export class ExpenseService {
 
     async exportExpensesXlsx(userId) {
         try {
-            const expenses = await this.getAllExpenses(userId);
+            const { data: expenses } = await this.getAllExpenses(userId);
             const workbook = new excelJs.Workbook();
             const worksheet = workbook.addWorksheet('My Expenses');
             worksheet.columns = [
