@@ -15,15 +15,17 @@ export class ExpenseService {
         this.budgetRepository = new BudgetRepository();
     }
 
-    async getAllExpenses(userId) {
+    async getAllExpenses(userId, page, limit) {
         try {
             const parseId = Number(userId);
+            const parsePage = Number(page);
+            const parseLimit = Number(limit);
             validateIntegerValues(parseId, 'User ID');
             const user = await this.userRepository.getById(parseId);
             if(!user) {
                 return notFound(user, "User");
             }
-            return await this.expenseRepository.getAll(parseId);
+            return await this.expenseRepository.getAll(parseId, parsePage, parseLimit);
         }catch(error) {
             throw error;
         }

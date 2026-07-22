@@ -1,11 +1,28 @@
 import pool from "../../../config/db.config.js";
 
 export class ExpenseRepository {
-    async getAll(userId) {
+    async getAll(userId, page, limit) {
+        const offset = (page - 1) * limit;
         const result = await pool.query(
-            "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC", [userId]
+            "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset] 
         );
-        return result.rows;
+
+        const countResult = await pool.query(
+            "SELECT COUNT(*) FROM expenses WHERE user_id = $1", [userId]
+        );
+
+        const total = parseInt(countResult.rows[0].count);
+        return {
+            data: result.rows,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1
+            }
+        };
     }
 
     async getById(id, userId) {
