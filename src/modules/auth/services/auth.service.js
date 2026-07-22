@@ -36,7 +36,7 @@ export class AuthenticationService {
                 user.email,
                 OtpPurpose.LOGIN,
             );
-            return "Otp sent successfully to your email";
+            return "Otp sent successfully to your email, if not found in your inbox, please check your Spam folder";
         }catch (error) {
             throw error;
         }
