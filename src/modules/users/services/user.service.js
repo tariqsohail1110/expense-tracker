@@ -9,8 +9,10 @@ export class UserService {
         this.hashingService = new HashingService();
     }
 
-    async getAll() {
-        const users = await this.userRepository.getAll();
+    async getAll(page, limit) {
+        const parsePage = Number(page);
+        const parseLimit = Number(limit);
+        const users = await this.userRepository.getAll(parsePage, parseLimit);
         return users;
     }
 

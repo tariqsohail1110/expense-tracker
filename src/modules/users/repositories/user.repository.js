@@ -1,12 +1,28 @@
 import pool from "../../../config/db.config.js";
 
 export class UserRepository {
-    async getAll() { 
+    async getAll(page, limit) { 
+        const offset = (page - 1) * limit;
         const result = await pool.query(
-            "SELECT * FROM users WHERE role = $1", ['user']
+            "SELECT * FROM users WHERE role = $1 ORDER by id ASC LIMIT $2 OFFSET $3", ['user', limit, offset]
         );
-        // console.log('Result:', result.rows);
-        return result.rows;
+
+        const countResult = await pool.query(
+            "SELECT COUNT(*) FROM users WHERE role = $1", ['user']
+        );
+        const total = parseInt(countResult.rows[0].count);
+        return {
+            data: result.rows,
+            pagination: {
+                total: total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1
+            }
+        
+        };
     }
 
     async getById(id) {

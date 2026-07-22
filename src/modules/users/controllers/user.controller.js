@@ -7,8 +7,10 @@ export class UserController {
     }
     getAllUsers = async (req, res) => {
         try {
-            const users = await this.userService.getAll();
-            res.status(200).json({ data: users.map(user => UserResponseDto(user)) });
+            const page = (req.query.page) || 1;
+            const limit = (req.query.limit) || 10;
+            const { data: users, pagination } = await this.userService.getAll(page, limit);
+            res.status(200).json({ data: users.map(user => UserResponseDto(user)), pagination: pagination });
         } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
             res.status(statusCode).json({ message: error.message });
