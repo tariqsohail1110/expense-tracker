@@ -117,4 +117,16 @@ export class UserController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    exportUsersXlsx = async (req, res) => {
+        try {
+            const buffer = await this.userService.exportUsersXlsx();
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=users.xlsx');
+            res.status(200).send(buffer);
+        } catch (error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
 }

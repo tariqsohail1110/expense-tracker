@@ -18,6 +18,7 @@ router.use(hasRole(Roles.ADMIN));
 //user routes
 router.post('/users', validate(validateCreateUserDto), userController.createUser);
 router.get('/users', userController.getAllUsers);
+router.get('/users/downloadusersxlsx', userController.exportUsersXlsx);
 router.get('/users/email', userController.getByEmail);
 router.get('/users/:id', userController.getById);
 router.patch('/users/:id', validate(validateUpdateUserDto), userController.updateUser);

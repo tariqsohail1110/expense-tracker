@@ -2,6 +2,7 @@ import { UserRepository } from "../repositories/user.repository.js";
 import { validateIntegerValues } from "../../../common/errors/validate-integer values.error.js";
 import { notExists, notFound } from "../../../common/errors/not-exist.error.js";
 import { HashingService } from "../../../common/hashingService/hashing.service.js";
+import excelJs from 'exceljs';
 
 export class UserService {
     constructor() {
@@ -97,6 +98,31 @@ export class UserService {
             notFound(user, 'User');
             return { message: 'Password updated successfully' };
         }catch(error) {
+            throw error;
+        }
+    }
+
+    async exportUsersXlsx() {
+        try {
+            const { data: users } = await this.getAll();
+            const workBook = new excelJs.Workbook();
+            const workSheet = workBook.addWorksheet('Users');
+            workSheet.columns = [
+                { header: 'ID', key: 'id', width: 10},
+                { header: 'Name', key: 'name', width: 20},
+                { header: 'Email', key: 'email', width: 40},
+                { header: 'Status', key: 'status', width: 20},
+                { header: 'Date Created', key: 'date_created', width: 30}
+            ];
+            users.forEach((user) => {
+                workSheet.addRow(user);
+            });
+            workSheet.getRow(1).eachCell((cell) => {
+                cell.font = { bold: true };
+            });
+            const buffer = await workBook.xlsx.writeBuffer('users.xlsx');
+            return buffer;
+        } catch (error) {
             throw error;
         }
     }
