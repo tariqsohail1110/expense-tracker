@@ -2,6 +2,16 @@ import pool from "../../../config/db.config.js";
 
 export class UserRepository {
     async getAll(page, limit) { 
+        if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
+            const result = await pool.query(
+                'SELECT * FROM users WHERE role =$1', ['user']
+            );
+            return {
+                data: result.rows,
+                pagination: null
+            };
+        };
+
         const offset = (page - 1) * limit;
         const result = await pool.query(
             "SELECT * FROM users WHERE role = $1 ORDER by id ASC LIMIT $2 OFFSET $3", ['user', limit, offset]
