@@ -1,11 +1,13 @@
 import pool from "../../../config/db.config.js";
-
 export class UserRepository {
     async getAll(page, limit) { 
         if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
             const result = await pool.query(
                 'SELECT * FROM users WHERE role =$1', ['user']
             );
+            result.rows.map((user) => {
+                user.is_active === true ? user.is_active = 'Active' : user.is_active = 'Inactive';
+            });
             return {
                 data: result.rows,
                 pagination: null
@@ -16,6 +18,9 @@ export class UserRepository {
         const result = await pool.query(
             "SELECT * FROM users WHERE role = $1 ORDER by id ASC LIMIT $2 OFFSET $3", ['user', limit, offset]
         );
+        result.rows.map((user) => {
+            user.is_active === true ? user.is_active = 'Active' : user.is_active = 'Inactive';
+        });
 
         const countResult = await pool.query(
             "SELECT COUNT(*) FROM users WHERE role = $1", ['user']

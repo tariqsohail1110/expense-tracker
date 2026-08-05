@@ -21,6 +21,7 @@ export class UserService {
         const parseId = Number(id);
         validateIntegerValues(parseId, 'user ID');
         const user = await this.userRepository.getById(parseId);
+        user.is_active === true ? user.is_active = 'Active' : user.is_active = 'Inactive';
         return notExists(user, "User");
     }
 
@@ -111,8 +112,8 @@ export class UserService {
                 { header: 'ID', key: 'id', width: 10},
                 { header: 'Name', key: 'name', width: 20},
                 { header: 'Email', key: 'email', width: 40},
-                { header: 'Status', key: 'status', width: 20},
-                { header: 'Date Created', key: 'date_created', width: 30}
+                { header: 'Status', key: 'is_active', width: 20},
+                { header: 'Date Created', key: 'created_at', width: 30}
             ];
             users.forEach((user) => {
                 workSheet.addRow(user);
