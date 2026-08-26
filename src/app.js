@@ -33,11 +33,11 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use(express.json());
 app.use(bearerToken());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/users', userRouter);
-app.use('/expenses', expenseRouter);
-app.use('/auth', authenticationRouter);
-app.use('/admin', adminRouter);
-app.use('/budget', budgetRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/expenses', expenseRouter);
+app.use('/api/v1/auth', authenticationRouter);
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/budget', budgetRouter);
 
 await initDB();
 
