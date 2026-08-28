@@ -10,6 +10,7 @@ import budgetRouter from './routes/budget.route.js';
 import { initDB } from './config/db.config.js';
 import bearerToken from 'express-bearer-token';
 import { AdminSeeder } from './modules/admin/seeder/admin.seeder.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -29,7 +30,12 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 
-
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 app.use(bearerToken());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

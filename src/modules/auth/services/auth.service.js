@@ -30,7 +30,6 @@ export class AuthenticationService {
             if(!isMatch || !user) {
                 throw new Error("Invalid Credentials");
             }
-            // console.log("User", user);
             await this.otpService.sendOtp(
                 user.id,
                 user.email,
@@ -86,9 +85,9 @@ export class AuthenticationService {
                     email,
                     OtpPurpose.PASSWORD_RESET
                 );
-             return { message: 'If this email is registered, an OTP will be sent to it' };
+            return { message: 'If this email is registered, an OTP will be sent to it' };
         }catch(error) {
-             return { message: 'If this email is registered, an OTP will be sent to it' };
+            return { message: 'If this email is registered, an OTP will be sent to it' };
         }
     }
 
