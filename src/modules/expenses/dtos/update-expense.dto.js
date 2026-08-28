@@ -3,5 +3,4 @@ export const UpdateExpenseDto = {
     amount: 'number',
     category: 'string',
     date: 'string',
-    note: 'string',
 }

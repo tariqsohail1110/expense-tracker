@@ -111,7 +111,8 @@ export class UserService {
             const workSheet = workBook.addWorksheet('Users');
             workSheet.columns = [
                 { header: 'ID', key: 'id', width: 10},
-                { header: 'Name', key: 'name', width: 20},
+                { header: 'First Name', key: 'first_name', width: 20},
+                { header: 'Last Name', key: 'last_name', width: 20},
                 { header: 'Email', key: 'email', width: 40},
                 { header: 'Status', key: 'is_active', width: 20},
                 { header: 'Date Created', key: 'created_at', width: 30}

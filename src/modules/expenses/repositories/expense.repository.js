@@ -42,10 +42,10 @@ export class ExpenseRepository {
     }
 
     async createWithClient(client, userId, data) {
-        const {title, amount, category, date, note} = data;
+        const {title, amount, category, date} = data;
         const result = await client.query(
-            "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
-            [userId, title, amount, category, date, note]
+            "INSERT INTO expenses (user_id, title, amount, category, date) VALUES ($1, $2, $3, $4, $5) RETURNING *", 
+            [userId, title, amount, category, date]
         );
         return result.rows[0];
     }
@@ -69,10 +69,6 @@ export class ExpenseRepository {
         if(data.date !== undefined) {
             fields.push(`date = $${counter++}`);
             values.push(data.date);
-        }
-        if(data.note !== undefined) {
-            fields.push(`note = $${counter++}`);
-            values.push(data.note);
         }
         values.push(id);
         values.push(userId);

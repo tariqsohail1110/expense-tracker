@@ -41,14 +41,6 @@ export const validateUpdateExpenseDto = (data) => {
             errors.date = 'Date is too long';
         }
     }
-
-    if(data.note !== undefined) {
-        if(typeof data.note !== 'string') {
-            errors.note = 'Date must be String';
-        }else if(data.note.length > 100) {
-            errors.note = 'Date is too long';
-        }
-    }
     
     return {
         isValid: Object.keys(errors).length === 0, errors

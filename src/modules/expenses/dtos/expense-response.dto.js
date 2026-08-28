@@ -5,6 +5,5 @@ export const ExpenseResponseDto = (expense) => ({
     amount: expense.amount,
     category: expense.category,
     date: expense.date,
-    note: expense.note,
     createdAt: expense.created_at
 })

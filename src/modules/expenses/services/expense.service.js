@@ -51,7 +51,7 @@ export class ExpenseService {
         try {
             const parseId = Number(userId);
             validateIntegerValues(parseId, 'User');
-            const { title, amount, category, date, note } = data;
+            const { title, amount, category, date} = data;
             const budget = await this.budgetRepository.getBudgetByUserId(parseId);
             if(!budget || budget === undefined) {
                 throw new Error('No budget found, please define your budget');
@@ -140,7 +140,6 @@ export class ExpenseService {
                 { header: 'Amount', key: 'amount', width: 25 },
                 { header: 'Category', key: 'category', width: 20 },
                 { header: 'Date', key: 'date', width: 20 },
-                { header: 'Note', key: 'note', width: 70 },
             ];
             let count = 1;
             expenses.forEach((expense) => {
