@@ -2,7 +2,8 @@ export const User = {
     tableName: 'users',
     columns: {
         id: 'SERIAL PRIMARY KEY',
-        name: 'VARCHAR(100) NOT NULL',
+        first_name: 'VARCHAR(100) NOT NULL',
+        last_name: 'VARCHAR(100) NOT NULL',
         email: 'VARCHAR(50) NOT NULL UNIQUE',
         password: 'TEXT NOT NULL',
         role: 'VARCHAR(20) DEFAULT \'user\' CHECK (role IN (\'admin\', \'user\'))',
@@ -14,7 +15,8 @@ export const User = {
 export const createUserTable = `
     CREATE TABLE IF NOT EXISTS users (
         id          SERIAL PRIMARY KEY,
-        name        VARCHAR(100) NOT NULL,
+        first_name  VARCHAR(100) NOT NULL,
+        last_name   VARCHAR(100) NOT NULL,
         email       VARCHAR(50) NOT NULL UNIQUE,
         password    TEXT NOT NULL,
         role        VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'user')),
