@@ -8,10 +8,16 @@ export const validateRegisterUserDto = (data) => {
         }
     })
     //name
-    if(typeof data.name !== 'string') {
-        errors.name = 'Name must be a string!';
-    }else if(data.name.length > 100) {
-        errors.name = 'Name must be less than 100 characters';
+    if(typeof data.firstname !== 'string') {
+        errors.firstname = 'First name must be a string!';
+    }else if(data.firstname.length > 100) {
+        errors.firstname = 'First name must be less than 100 characters';
+    }
+
+    if(typeof data.lastname !== 'string') {
+        errors.lastname = 'Last name must be a string!';
+    }else if(data.lastname.length > 100) {
+        errors.lastname = 'Last name must be less than 100 characters';
     }
 
     //email

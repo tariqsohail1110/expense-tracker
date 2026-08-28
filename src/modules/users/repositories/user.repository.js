@@ -57,7 +57,7 @@ export class UserRepository {
     async create(data) {
         const {firstname, lastname, email, password} = data;
         const result = await pool.query(
-            "INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
+            "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
             [firstname, lastname, email, password]
         );
         return result.rows[0];
@@ -68,11 +68,11 @@ export class UserRepository {
         const values = [];
         let counter = 1;
         if(data.firstname !== undefined) {
-            fields.push(`firstname = $${counter++}`);
+            fields.push(`first_name = $${counter++}`);
             values.push(data.firstname);
         }
         if(data.lastname !== undefined) {
-            fields.push(`lastname = $${counter++}`);
+            fields.push(`last_name = $${counter++}`);
             values.push(data.lastname);
         }
         if(data.email !== undefined) {
