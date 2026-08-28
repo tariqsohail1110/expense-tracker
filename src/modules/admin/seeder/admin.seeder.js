@@ -22,9 +22,11 @@ export class AdminSeeder {
 
     async createAdmin(data) {
         try {
-            const { name, email, password, role } = data;
+            const { firstname, lastname, email, password, role } = data;
+            console.log(data);
+            
             const result = await pool.query(
-                'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *', [name, email, password, role]
+                'INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [firstname, lastname, email, password, role]
             );
             return result.rows[0];
         }catch(error) {
@@ -46,7 +48,8 @@ export class AdminSeeder {
             const password = process.env.PASSWORD;
             const hashedPass = await this.hashingService.hashPassword(password);
             await this.createAdmin({
-                name: process.env.NAME,
+                firstname: process.env.FIRSTNAME,
+                lastname: process.env.LASTNAME,
                 email,
                 password: hashedPass,
                 role: 'admin',
