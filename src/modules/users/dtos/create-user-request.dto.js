@@ -1,5 +1,6 @@
 export const CreateUserRequestDto = {
-    name: 'string',
+    firstname: 'string',
+    lastname: 'string',
     email: 'string',
     password: 'string'
 }

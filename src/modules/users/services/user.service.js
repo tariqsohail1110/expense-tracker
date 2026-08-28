@@ -31,14 +31,15 @@ export class UserService {
     }
 
     async createUser(data) {
-        const { name, email, password, } = data;
+        const { firstname, lastname, email, password, } = data;
         const existingUser = await this.userRepository.getByEmail(email);
         if(existingUser) {
             throw new Error("User Already Exists");
         }
         const hashedPass = await this.hashingService.hashPassword(password);
         const user = await this.userRepository.create({
-            name,
+            firstname,
+            lastname,
             email,
             password: hashedPass,
         });

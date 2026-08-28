@@ -55,10 +55,10 @@ export class UserRepository {
     }
 
     async create(data) {
-        const {name, email, password} = data;
+        const {firstname, lastname, email, password} = data;
         const result = await pool.query(
-            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [name, email, password]
+            "INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3) RETURNING *",
+            [firstname, lastname, email, password]
         );
         return result.rows[0];
     }
