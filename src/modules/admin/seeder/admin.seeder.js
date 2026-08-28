@@ -23,8 +23,6 @@ export class AdminSeeder {
     async createAdmin(data) {
         try {
             const { firstname, lastname, email, password, role } = data;
-            console.log(data);
-            
             const result = await pool.query(
                 'INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [firstname, lastname, email, password, role]
             );
