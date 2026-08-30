@@ -11,7 +11,7 @@ const router = Router();
 const budgetController = new BudgetController();
 
 router.use(authMiddleware);
-router.use(hasRole(Roles.USER));
+router.use(hasRole(Roles.USER, Roles.ADMIN));
 
 router.post('/', validate(validateCreateBudgetDto), budgetController.createBudget);
 router.get('/me', budgetController.getBudgetByUserId);

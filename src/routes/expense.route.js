@@ -11,7 +11,7 @@ const router = Router();
 const expenseController = new ExpenseController();
 
 router.use(authMiddleware);
-router.use(hasRole(Roles.USER));
+router.use(hasRole(Roles.USER, Roles.ADMIN));
 
 router.post('/', validate(validateCreateExpenseDto), expenseController.createExpense);
 router.get('/downloadxlsx', expenseController.exportExpenseXlsx);
