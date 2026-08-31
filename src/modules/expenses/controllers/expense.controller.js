@@ -22,8 +22,13 @@ export class ExpenseController {
     getAllOwnExpenses = async (req, res) => {
         try {
             const userId = req.user.sub;
+<<<<<<< Updated upstream
             const page = (req.query.page) || 1;
             const limit = (req.query.limit) || 10;
+=======
+            // const page = (req.query.page) || 1;
+            // const limit = (req.query.limit) || 10;
+>>>>>>> Stashed changes
             const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId)//, page, limit);
             res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
         } catch (error) {
@@ -39,7 +44,7 @@ export class ExpenseController {
             // console.log("userID: ", user_id);
             const expense = await this.expenseService.getExpenseById(id, user_id);
             res.status(200).json({ data: ExpenseResponseDto(expense) });
-        }catch (error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 404;
             res.status(statusCode).json({ message: error.message });
         }
@@ -52,7 +57,7 @@ export class ExpenseController {
             // console.log("userID: ", user_id);
             const expense = await this.expenseService.getExpenseById(id, user_id);
             res.status(200).json({ data: ExpenseResponseDto(expense) });
-        }catch (error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 404;
             res.status(statusCode).json({ message: error.message });
         }
@@ -64,7 +69,7 @@ export class ExpenseController {
             const { ...data } = req.body;
             const expense = await this.expenseService.createExpense(user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
-        }catch(error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
@@ -77,7 +82,7 @@ export class ExpenseController {
             const { ...data } = req.body;
             const expense = await this.expenseService.updateExpense(id, user_id, data);
             res.status(201).json({ data: ExpenseResponseDto(expense) });
-        }catch(error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
@@ -89,7 +94,7 @@ export class ExpenseController {
             const user_id = req.user.sub;
             await this.expenseService.deleteExpense(id, user_id);
             res.status(200).json({ message: "Expense deleted successfully!" });
-        }catch(error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
@@ -102,7 +107,7 @@ export class ExpenseController {
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             res.setHeader('Content-Disposition', 'attachment; filename=expenses.xlsx');
             res.status(200).send(buffer);
-        }catch(error) {
+        } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }

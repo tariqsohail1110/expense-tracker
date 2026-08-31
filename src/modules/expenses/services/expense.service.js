@@ -11,7 +11,7 @@ export class ExpenseService {
     constructor() {
         this.expenseRepository = new ExpenseRepository();
         this.userRepository = new UserRepository();
-        this.budgetService =  new BudgetService();
+        this.budgetService = new BudgetService();
         this.budgetRepository = new BudgetRepository();
     }
 
@@ -22,11 +22,15 @@ export class ExpenseService {
             // const parseLimit = Number(limit);
             validateIntegerValues(parseId, 'User ID');
             const user = await this.userRepository.getById(parseId);
-            if(!user) {
+            if (!user) {
                 return notFound(user, "User");
             }
             return await this.expenseRepository.getAll(parseId)//, parsePage, parseLimit);
+<<<<<<< Updated upstream
         }catch(error) {
+=======
+        } catch (error) {
+>>>>>>> Stashed changes
             throw error;
         }
     }
@@ -42,7 +46,7 @@ export class ExpenseService {
             const expense = await this.expenseRepository.getById(parseId, parseUserId);
             notFound(expense, 'Expense');
             return expense;
-        }catch(error) {
+        } catch (error) {
             throw error;
         }
     }
@@ -53,12 +57,12 @@ export class ExpenseService {
             validateIntegerValues(parseId, 'User');
             const { title, amount, category, date} = data;
             const budget = await this.budgetRepository.getBudgetByUserId(parseId);
-            if(!budget || budget === undefined) {
+            if (!budget || budget === undefined) {
                 throw new Error('No budget found, please define your budget');
             }
             const parsedRem = parseFloat(budget.remaining_budget);
             const remainingBudget = parsedRem - data.amount;
-            if(remainingBudget < 0) {
+            if (remainingBudget < 0) {
                 throw new Error('No negative balance allowed');
             }
             return await withTransaction(async (client) => {
@@ -66,7 +70,7 @@ export class ExpenseService {
                 await this.budgetRepository.deductFromBudget(client, userId, data.amount);
                 return newExpense;
             });
-        }catch(error) {
+        } catch (error) {
             throw error;
         }
     }
@@ -81,32 +85,32 @@ export class ExpenseService {
             notFound(user, "User");
             const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
             notFound(existingExpense, 'Expense');
-            if(data.amount !== undefined) {
+            if (data.amount !== undefined) {
                 const budget = await this.budgetRepository.getBudgetByUserId(parseUserId);
-                if(!budget || budget === undefined) {
+                if (!budget || budget === undefined) {
                     throw new Error('No budget found, please define your budget');
                 }
                 const parsedRem = parseFloat(budget.remaining_budget);
                 const parsedExp = parseFloat(existingExpense.amount);
                 let remainingBudget;
-                if(data.amount > parsedExp) {
+                if (data.amount > parsedExp) {
                     remainingBudget = parsedRem - (data.amount - parsedExp);
-                    if(remainingBudget < 0) {
+                    if (remainingBudget < 0) {
                         throw new Error('No negative balance allowed');
                     }
-                }else {
+                } else {
                     remainingBudget = parsedRem + (parsedExp - data.amount);
                 }
                 await this.budgetService.updateBudgetFromExpense(parseUserId, remainingBudget);
             }
             return await this.expenseRepository.update(parseId, parseUserId, data);
-        }catch(error) {
+        } catch (error) {
             throw error;
         }
     }
 
     async deleteExpense(id, userId) {
-        try{
+        try {
             const parseId = Number(id);
             const parseUserId = Number(userId);
             validateIntegerValues(parseId, 'Expense ID');
@@ -116,7 +120,7 @@ export class ExpenseService {
             const existingExpense = await this.expenseRepository.getById(parseId, parseUserId);
             notFound(existingExpense, 'Expense');
             const budget = await this.budgetRepository.getBudgetByUserId(parseUserId);
-            if(!budget || budget === undefined) {
+            if (!budget || budget === undefined) {
                 throw new Error('No budget found, please define your budget')
             }
             const parsedRem = parseFloat(budget.remaining_budget);
@@ -124,14 +128,14 @@ export class ExpenseService {
             const updatedAmount = parsedRem + parsedExp;
             await this.budgetService.updateBudgetFromExpense(parseUserId, updatedAmount);
             return await this.expenseRepository.delete(parseId, parseUserId);
-        }catch(error) {
+        } catch (error) {
             throw error;
         }
     }
 
     async exportExpensesXlsx(userId) {
         try {
-            const {data: expenses } = await this.getAllExpenses(userId);
+            const { data: expenses } = await this.getAllExpenses(userId);
             const workbook = new excelJs.Workbook();
             const worksheet = workbook.addWorksheet('My Expenses');
             worksheet.columns = [
@@ -152,7 +156,7 @@ export class ExpenseService {
             });
             const buffer = await workbook.xlsx.writeBuffer('expenses.xlsx');
             return buffer;
-        }catch (error) {
+        } catch (error) {
             throw error;
         }
     }

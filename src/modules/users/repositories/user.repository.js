@@ -83,6 +83,10 @@ export class UserRepository {
             fields.push(`password = $${counter++}`);
             values.push(data.password);
         }
+        if(data.is_active !== undefined) {
+            fields.push(`is_active = $${counter++}`);
+            values.push(data.is_active);
+        }
         values.push(id);
 
         const result = await pool.query(

@@ -30,12 +30,25 @@ export class AuthenticationService {
             if(!isMatch || !user) {
                 throw new Error("Invalid Credentials");
             }
-            await this.otpService.sendOtp(
+            const { password: _, role, ...userWithoutPass } = user;
+            if (user.is_active === false) {
+                await this.otpService.sendOtp(
                 user.id,
                 user.email,
                 OtpPurpose.LOGIN,
-            );
-            return "Otp sent successfully to your email, if not found in your inbox, please check your Spam folder";
+                );
+                return {
+                    user: userWithoutPass,
+                    message: "Otp sent successfully to your email, if not found in your inbox, please check your Spam folder"
+                };
+            }
+            const accessToken = await this.jwtService.generateAccessToken(user.id, user.email, user.role);
+            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role);
+            return {
+                user: userWithoutPass,
+                accessToken,
+                refreshToken,
+            };
         }catch (error) {
             throw error;
         }
