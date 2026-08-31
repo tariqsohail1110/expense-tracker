@@ -1,36 +1,39 @@
 import pool from "../../../config/db.config.js";
 
 export class ExpenseRepository {
-    async getAll(userId, page, limit) {
-        if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
-            const result = await pool.query(
-                "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC", [userId]
-            );
-            return {
-            data: result.rows,
-            pagination: null
-            };
-        }
-        const offset = (page - 1) * limit;
+    async getAll(userId){//, page, limit) {
+        // if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
+        //     const result = await pool.query(
+        //         "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC", [userId]
+        //     );
+        //     return {
+        //     data: result.rows,
+        //     pagination: null
+        //     };
+        // }
+        // const offset = (page - 1) * limit;
+        // const result = await pool.query(
+        //     "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset] 
+        // );
+
+        // const countResult = await pool.query(
+        //     "SELECT COUNT(*) FROM expenses WHERE user_id = $1", [userId]
+        // );
+
+        // const total = parseInt(countResult.rows[0].count);
+
         const result = await pool.query(
-            "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset] 
-        );
-
-        const countResult = await pool.query(
-            "SELECT COUNT(*) FROM expenses WHERE user_id = $1", [userId]
-        );
-
-        const total = parseInt(countResult.rows[0].count);
+            "SELECT * FROM expenses WHERE user_id = $1", [userId]);
         return {
             data: result.rows,
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-                hasNextPage: page < Math.ceil(total / limit),
-                hasPrevPage: page > 1
-            }
+            // pagination: {
+            //     total,
+            //     page,
+            //     limit,
+            //     totalPages: Math.ceil(total / limit),
+            //     hasNextPage: page < Math.ceil(total / limit),
+            //     hasPrevPage: page > 1
+            // }
         };
     }
 

@@ -24,7 +24,7 @@ export class ExpenseController {
             const userId = req.user.sub;
             const page = (req.query.page) || 1;
             const limit = (req.query.limit) || 10;
-            const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId, page, limit);
+            const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId)//, page, limit);
             res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
         } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
