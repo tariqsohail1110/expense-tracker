@@ -26,11 +26,7 @@ export class ExpenseService {
                 return notFound(user, "User");
             }
             return await this.expenseRepository.getAll(parseId)//, parsePage, parseLimit);
-<<<<<<< Updated upstream
-        }catch(error) {
-=======
         } catch (error) {
->>>>>>> Stashed changes
             throw error;
         }
     }
@@ -55,7 +51,7 @@ export class ExpenseService {
         try {
             const parseId = Number(userId);
             validateIntegerValues(parseId, 'User');
-            const { title, amount, category, date} = data;
+            const { title, amount, category, date } = data;
             const budget = await this.budgetRepository.getBudgetByUserId(parseId);
             if (!budget || budget === undefined) {
                 throw new Error('No budget found, please define your budget');

@@ -1,49 +1,29 @@
 import pool from "../../../config/db.config.js";
 
 export class ExpenseRepository {
-<<<<<<< Updated upstream
-    async getAll(userId){//, page, limit) {
-=======
     async getAll(userId) {//, page, limit) {
->>>>>>> Stashed changes
         // if (page === undefined || limit === undefined || Number.isNaN(page) || Number.isNaN(limit)) {
         //     const result = await pool.query(
         //         "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC", [userId]
         //     );
         //     return {
-<<<<<<< Updated upstream
-        //     data: result.rows,
-        //     pagination: null
-=======
         //         data: result.rows,
         //         pagination: null
->>>>>>> Stashed changes
         //     };
         // }
         // const offset = (page - 1) * limit;
         // const result = await pool.query(
-<<<<<<< Updated upstream
-        //     "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset] 
-=======
         //     "SELECT * FROM expenses WHERE user_id = $1 ORDER by date DESC LIMIT $2 OFFSET $3", [userId, limit, offset]
->>>>>>> Stashed changes
         // );
 
         // const countResult = await pool.query(
         //     "SELECT COUNT(*) FROM expenses WHERE user_id = $1", [userId]
         // );
 
-<<<<<<< Updated upstream
-        // const total = parseInt(countResult.rows[0].count);
-
-        const result = await pool.query(
-            "SELECT * FROM expenses WHERE user_id = $1", [userId]);
-=======
         const result = await pool.query(
             "SELECT * FROM expenses WHERE user_id = $1", [userId]);//, limit, offset]);
 
         // const total = parseInt(countResult.rows[0].count);
->>>>>>> Stashed changes
         return {
             data: result.rows,
             // pagination: {
@@ -65,15 +45,9 @@ export class ExpenseRepository {
     }
 
     async createWithClient(client, userId, data) {
-<<<<<<< Updated upstream
-        const {title, amount, category, date} = data;
-        const result = await client.query(
-            "INSERT INTO expenses (user_id, title, amount, category, date) VALUES ($1, $2, $3, $4, $5) RETURNING *", 
-=======
         const { title, amount, category, date } = data;
         const result = await client.query(
             "INSERT INTO expenses (user_id, title, amount, category, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
->>>>>>> Stashed changes
             [userId, title, amount, category, date]
         );
         return result.rows[0];
@@ -109,7 +83,7 @@ export class ExpenseRepository {
     }
 
     async delete(id, userId) {
-            await pool.query(
+        await pool.query(
             "DELETE FROM expenses WHERE id = $1 AND user_id = $2 RETURNING *",
             [id, userId]
         );

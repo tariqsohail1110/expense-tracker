@@ -22,13 +22,8 @@ export class ExpenseController {
     getAllOwnExpenses = async (req, res) => {
         try {
             const userId = req.user.sub;
-<<<<<<< Updated upstream
-            const page = (req.query.page) || 1;
-            const limit = (req.query.limit) || 10;
-=======
             // const page = (req.query.page) || 1;
             // const limit = (req.query.limit) || 10;
->>>>>>> Stashed changes
             const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId)//, page, limit);
             res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
         } catch (error) {
