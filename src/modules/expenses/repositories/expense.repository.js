@@ -88,4 +88,11 @@ export class ExpenseRepository {
             [id, userId]
         );
     }
+
+    async getAllTransactions() {
+        const result = await pool.query(
+            "SELECT * FROM expenses"
+        );
+        return result.rows;
+    }
 }

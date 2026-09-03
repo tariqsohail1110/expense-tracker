@@ -156,4 +156,12 @@ export class ExpenseService {
             throw error;
         }
     }
+
+    async getAllTransactions() {
+        const data = await this.expenseRepository.getAllTransactions();
+        const expenses = (data.map((expense) => Number(expense.amount)));
+        return expenses.reduce((acc, curr) => {
+            return acc + curr
+        }, 0)
+    }
 }
