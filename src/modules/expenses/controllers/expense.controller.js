@@ -107,4 +107,15 @@ export class ExpenseController {
             res.status(statusCode).json({ message: error.message });
         }
     }
+
+    getAllTransactions = async (req, res) => {
+        try {
+            const user_id = req.user.sub;
+            const transactions = await this.expenseService.getAllTransactions();
+            res.status(200).json(transactions);
+        }catch(error) {
+            const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
+            res.status(statusCode).json({ message: error.message });
+        }
+    }
 }

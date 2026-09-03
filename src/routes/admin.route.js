@@ -26,6 +26,7 @@ router.patch('/users/:id/deactivate', userController.deactivateUser);
 router.delete('/users/:id', userController.deleteUser);
 
 //expense routes
+router.get('/expenses/alltransactions', expenseController.getAllTransactions);
 router.get('/expensesall/:userId', expenseController.getExpensesByUserId);
 router.get('/expenses/:id', expenseController.getExpenseByUserId);
 
