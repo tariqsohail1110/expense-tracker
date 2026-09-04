@@ -10,10 +10,11 @@ export class UserService {
         this.hashingService = new HashingService();
     }
 
-    async getAll(page, limit) {
-        const parsePage = Number(page);
-        const parseLimit = Number(limit);
-        const users = await this.userRepository.getAll(parsePage, parseLimit);
+    async getAll() {//(page, limit) {
+        // const parsePage = Number(page);
+        // const parseLimit = Number(limit);
+        const users = await this.userRepository.getAll()//(parsePage, parseLimit);
+        users.data.map((user) => user.is_active === true ? user.is_active = 'Active' : user.is_active = 'Inactive')
         return users;
     }
 
