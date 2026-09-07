@@ -84,5 +84,15 @@ export class AuthenticationController {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 400;
             res.status(statusCode).json({ message: error.message });
         }
-    } 
+    }
+
+    logout = async (req, res) => {
+        try {
+            const userId = req.user.sub;
+            await this.authenticationService.logout(userId);
+            res.status(200).json({ message: "Successfully logged out"});
+        }catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }

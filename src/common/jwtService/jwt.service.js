@@ -3,12 +3,17 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { UserService } from '../../modules/users/services/user.service.js';
 
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class JWTService {
+
+    constructor() {
+        this.userService = new UserService();
+    }
     readPrivateKey = () => {
         return fs.readFileSync(join(__dirname, '../../keys/private_key.pem'), 'utf8');
     }
@@ -37,12 +42,13 @@ export class JWTService {
         }
     }
 
-    async generateRefreshToken(id, email, role) {
+    async generateRefreshToken(id, email, role, tokenVersion = 1) {
         try {
             const payload = {
                 sub: id,
                 email: email,
                 role: role,
+                tokenVersion: tokenVersion,
                 type: 'refresh'
             }
             const secret = this.readPrivateKey();
@@ -62,6 +68,13 @@ export class JWTService {
             const payload = jwt.verify(refreshToken, key);
             if(payload.type !== 'refresh') {
                 throw new Error('Invalid token type');
+            }
+            const user = await this.userService.getById(payload.sub);
+            
+            if(!user || user.token_version !== payload.tokenVersion) {
+                const err = new Error("Token expired or revoked");
+                err.statusCode = 401;
+                throw err;
             }
             const newAccessToken = await this.generateAccessToken(
                 payload.sub,

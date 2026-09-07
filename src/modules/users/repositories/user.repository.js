@@ -126,4 +126,11 @@ export class UserRepository {
         );
         return result.rows[0];
     }
+
+    async incrementTokenVersion(id) {
+        const result = await pool.query(
+            "UPDATE users SET token_version = token_version + 1 WHERE id = $1 RETURNING token_version", [id]
+        );
+        return result.rows[0];
+    }
 }
