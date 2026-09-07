@@ -43,7 +43,7 @@ export class AuthenticationService {
                 };
             }
             const accessToken = await this.jwtService.generateAccessToken(user.id, user.email, user.role);
-            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role);
+            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role, user.token_version);
             return {
                 user: userWithoutPass,
                 accessToken,
@@ -137,5 +137,9 @@ export class AuthenticationService {
         }catch(error) {
             throw error;
         }
+    }
+
+    async logout(userId) {
+        return await this.userService.incrementTokenVersion(userId);
     }
 }

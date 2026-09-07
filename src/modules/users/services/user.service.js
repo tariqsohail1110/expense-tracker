@@ -130,4 +130,9 @@ export class UserService {
             throw error;
         }
     }
+
+    async incrementTokenVersion(userId) {
+        const parseId = Number(userId);
+        return await this.userRepository.incrementTokenVersion(parseId);
+    }
 }

@@ -7,6 +7,7 @@ import { validateVerifyOtpDto } from "../middlewares/auth/validate-verifyotp-mid
 import { validateRegisterUserDto } from "../middlewares/auth/validate-register-user.dto.js";
 import { validateForgetPasswordDto } from "../middlewares/auth/validate-forget-password-dto.middleware.js";
 import { validateResetPasswordDto } from "../middlewares/auth/validate-reset-password.dto.js";
+import { authMiddleware } from '../middlewares/auth/auth.middleware.js';
 
 const router = Router();
 const authenticationController = new AuthenticationController();
@@ -18,5 +19,6 @@ router.post('/refresh', validate(validateRefreshTokenDto), authenticationControl
 router.post('/forget', validate(validateForgetPasswordDto),  authenticationController.forget);
 router.post('/verifyotp', validate(validateVerifyOtpDto), authenticationController.verifyOtpforReset);
 router.post('/reset', validate(validateResetPasswordDto),  authenticationController.resetPass);
+router.post('/logout', authMiddleware, authenticationController.logout);
 
 export default router;
