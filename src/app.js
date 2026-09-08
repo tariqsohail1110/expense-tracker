@@ -1,7 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
 import userRouter from './routes/user.route.js';
 import expenseRouter from './routes/expense.route.js';
 import authenticationRouter from './routes/auth.route.js';
@@ -11,23 +9,11 @@ import { initDB } from './config/db.config.js';
 import bearerToken from 'express-bearer-token';
 import { AdminSeeder } from './modules/admin/seeder/admin.seeder.js';
 import cors from 'cors';
+import passport from './config/passport.js';
 
 dotenv.config();
 
 const app = express();
-
-const swaggerOptions = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'Expense Tracker API',
-            version: '1.0.0',
-        },
-    },
-    apis: ['./src/routes/*.js'],
-}
-
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 
 app.use(cors({
@@ -36,9 +22,11 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+
 app.use(express.json());
 app.use(bearerToken());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(passport.initialize());
+
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/expenses', expenseRouter);
 app.use('/api/v1/auth', authenticationRouter);
