@@ -9,6 +9,7 @@ import { validateForgetPasswordDto } from "../middlewares/auth/validate-forget-p
 import { validateResetPasswordDto } from "../middlewares/auth/validate-reset-password.dto.js";
 import passport from "../config/passport.js";
 import { JWTService } from "../common/jwtService/jwt.service.js";
+import { authMiddleware } from '../middlewares/auth/auth.middleware.js';
 
 const router = Router();
 const authenticationController = new AuthenticationController();
@@ -22,6 +23,7 @@ router.post('/refresh', validate(validateRefreshTokenDto), authenticationControl
 router.post('/forget', validate(validateForgetPasswordDto),  authenticationController.forget);
 router.post('/verifyotp', validate(validateVerifyOtpDto), authenticationController.verifyOtpforReset);
 router.post('/reset', validate(validateResetPasswordDto),  authenticationController.resetPass);
+router.post('/logout', authMiddleware, authenticationController.logout);
 
 // Google OAuth Routes
 router.get(

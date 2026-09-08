@@ -1,18 +1,18 @@
 import pool from "../../../config/db.config.js";
 export class OtpRepository {
-    async getById(id) {
-        const result = await pool.query(
-            "SELECT * FROM otps WHERE id = $1", [id]
-        );
-        return result.rows[0];
-    }
+    // async getById(id) {
+    //     const result = await pool.query(
+    //         "SELECT * FROM otps WHERE id = $1", [id]
+    //     );
+    //     return result.rows[0];
+    // }
 
-    async getOtpByUserId(userId) {
-        const result = await pool.query(
-            "SELECT * FROM otps WHERE user_id = $1", [userId] 
-        );
-        return result.rows[0];
-    }
+    // async getOtpByUserId(userId) {
+    //     const result = await pool.query(
+    //         "SELECT * FROM otps WHERE user_id = $1", [userId] 
+    //     );
+    //     return result.rows[0];
+    // }
 
     async createOtp(
         userId,
@@ -50,12 +50,12 @@ export class OtpRepository {
         );
     }
 
-    async deleteExpiredOtp() {
-        const result = await pool.query(
-            "DELETE FROM otps WHERE expired_at < NOW() RETURNING *"
-        );
-        return result.rows[0];
-    }
+    // async deleteExpiredOtp() {
+    //     const result = await pool.query(
+    //         "DELETE FROM otps WHERE expired_at < NOW() RETURNING *"
+    //     );
+    //     return result.rows[0];
+    // }
 
     // async deleteUserOtps(
     //     userId,

@@ -66,7 +66,7 @@ export class AuthenticationService {
                 throw new Error("Invalid, please try again");
             }
             const accessToken = await this.jwtService.generateAccessToken(user.id, user.email, user.role);
-            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role);
+            const refreshToken = await this.jwtService.generateRefreshToken(user.id, user.email, user.role, user.token_version || 1);
             const { password: _, is_active, role, ...userWithoutPass } = user;
             if(user.is_active === false) {
                 await this.userService.activateUser(user.id);

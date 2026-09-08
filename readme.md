@@ -2,146 +2,126 @@
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
-2. [Architecture & Structure](#architecture--structure)
+2. [Architecture & Directory Structure](#architecture--directory-structure)
 3. [Technology Stack](#technology-stack)
 4. [Database Schema](#database-schema)
 5. [Module Architecture](#module-architecture)
 6. [Core Features](#core-features)
 7. [API Endpoints](#api-endpoints)
-8. [Security Implementation](#security-implementation)
+8. [Security & Authentication](#security--authentication)
 9. [Error Handling](#error-handling)
-10. [Configuration](#configuration)
-11. [Development & Deployment](#development--deployment)
+10. [Configuration & Environment](#configuration--environment)
+11. [Development & Setup](#development--setup)
 
 ---
 
 ## Project Overview
 
-**Personal Expense Tracker** is a comprehensive backend API built with Node.js and Express that enables users to manage their personal finances through expense tracking, budget management, and financial analytics. The application provides user authentication, OTP-based verification, role-based access control, and comprehensive expense management capabilities.
+**Personal Expense Tracker** (Vault Finance Backend) is a robust RESTful API built with **Node.js**, **Express v5**, and **PostgreSQL**. It provides comprehensive personal financial management features including expense tracking, budget allocation, Excel report downloads, multi-factor authentication (OTP via email & Google OAuth2), token revocation via token versioning, and administrative user controls.
 
 ### Key Objectives
-- Provide secure user authentication and authorization
-- Enable users to track personal expenses with categorization
-- Manage budgets and monitor spending
-- Generate financial reports
-- Support multi-user management through admin dashboard
+- Secure multi-method authentication (Email/Password + OTP & Google OAuth2).
+- JWT Token management with RSA-256 public/private key signing and instant logout token revocation.
+- Personal expense logging with categorization (*Food, Transport, Shopping, Health, Entertainment, Bills, Others*).
+- Budget limits with automatic spending deduction and balance calculation.
+- Exporting expense and user data in Excel (`.xlsx`) format.
+- Admin dashboard APIs for managing system users and monitoring total financial activity.
 
 ---
 
-## Architecture & Structure
+## Architecture & Directory Structure
 
-### Directory Layout
+The application follows a **layered modular (MVC) architecture**:
 
 ```
-expense-tracker/
+expense-tracker-backend/
 ├── src/
 │   ├── app.js                          # Express application entry point
-│   ├── common/                         # Shared utilities and services
-│   │   ├── enums/                      # Application enumerations
-│   │   ├── errors/                     # Custom error classes
-│   │   ├── hashingService/             # Password hashing service
-│   │   ├── jwtService/                 # JWT token management
-│   │   ├── mailer/                     # Email service configuration
-│   │   └── middleware/                 # Shared middleware
+│   ├── common/                         # Shared cross-cutting modules
+│   │   ├── enums/                      # Application enums (Roles, OtpPurpose)
+│   │   ├── errors/                     # Custom error handlers (notExists, validateIntegerValues)
+│   │   ├── hashingService/             # Password hashing service (bcrypt)
+│   │   ├── jwtService/                 # JWT token generation & verification (RS256)
+│   │   └── mailer/                     # Email delivery service & HTML templates
 │   ├── config/                         # Configuration files
-│   │   └── db.config.js                # Database connection setup
-│   ├── keys/                           # RSA keys for JWT signing
-│   │   ├── private_key.pem             # Private key for token generation
-│   │   └── public_key.pem              # Public key for token verification
-│   ├── middlewares/                    # Express middlewares
-│   │   ├── validation.middleware.js    # DTO validation middleware
-│   │   ├── auth/                       # Authentication validation middlewares
-│   │   ├── budget/                     # Budget-related validators
-│   │   ├── expenses/                   # Expense-related validators
-│   │   ├── roles/                      # Role-based access control
-│   │   └── users/                      # User-related validators
-│   ├── modules/                        # Feature modules (MVC Pattern)
-│   │   ├── admin/                      # Admin functionality
-│   │   ├── auth/                       # Authentication module
+│   │   ├── db.config.js                # PostgreSQL connection pool & transaction helper
+│   │   └── passport.js                 # Google OAuth Strategy configuration
+│   ├── keys/                           # RSA Keys for JWT signing
+│   │   ├── private_key.pem             # Private key (for token signing)
+│   │   └── public_key.pem              # Public key (for token verification)
+│   ├── middlewares/                    # Custom Express middlewares
+│   │   ├── validation.middleware.js    # DTO validation handler
+│   │   ├── auth/                       # Bearer token verification middleware
+│   │   ├── budget/                     # Budget request validators
+│   │   ├── expenses/                   # Expense request validators
+│   │   ├── roles/                      # Role-based access control (RBAC)
+│   │   └── users/                      # User management request validators
+│   ├── modules/                        # Feature modules
+│   │   ├── admin/                      # Admin seeder & repository
+│   │   ├── auth/                       # Authentication controllers, services & DTOs
 │   │   ├── budget/                     # Budget management module
 │   │   ├── expenses/                   # Expense management module
-│   │   ├── otp/                        # OTP service module
+│   │   ├── otp/                        # OTP service & repository
 │   │   └── users/                      # User management module
-│   └── routes/                         # API route handlers
-├── package.json                        # Project dependencies
-├── pnpm-lock.yaml                      # Locked dependency versions
-└── TECHNICAL_DOCUMENTATION.md          # This file
+│   └── routes/                         # API route declarations
+│       ├── admin.route.js              # Admin endpoints
+│       ├── auth.route.js               # Authentication & OAuth routes
+│       ├── budget.route.js             # Budget endpoints
+│       ├── expense.route.js            # Expense endpoints
+│       └── user.route.js               # Profile user endpoints
+├── .env                                # Environment variable configuration
+├── package.json                        # Node dependencies & npm scripts
+└── readme.md                           # Technical documentation
 ```
-
-### Architectural Pattern
-
-The application follows a **layered architecture** with clear separation of concerns:
-
-- **Routes Layer**: Defines API endpoints and request routing
-- **Controllers Layer**: Handles HTTP requests and delegates business logic
-- **Services Layer**: Contains business logic and orchestration
-- **Repositories Layer**: Manages data access and database operations
-- **Middleware Layer**: Handles cross-cutting concerns (validation, authentication, authorization)
-- **Common Layer**: Provides shared utilities and services
 
 ---
 
 ## Technology Stack
 
-### Backend Framework
-- **Node.js**: JavaScript runtime for server-side execution
-- **Express.js (v5.2.1)**: Web framework for building REST APIs
+### Core Framework & Server
+- **Node.js** (v18+)
+- **Express.js** (`^5.2.1`): Web framework
 
-### Database
-- **PostgreSQL**: Relational database management system
-- **pg (v8.19.0)**: PostgreSQL client for Node.js
+### Database & Storage
+- **PostgreSQL**: Relational database engine
+- **pg** (`^8.19.0`): PostgreSQL client pool
 
-### Authentication & Security
-- **bcrypt (v6.0.0)**: Password hashing library
-- **jsonwebtoken (v9.0.3)**: JWT token generation and verification
-- **RSA Encryption**: Public-private key cryptography for JWT signing
+### Security & Authentication
+- **Passport.js** (`^0.7.0`) & **passport-google-oauth20** (`^2.0.0`): Google OAuth2 authentication
+- **jsonwebtoken** (`^9.0.3`): JWT with RS256 asymmetric signing
+- **bcrypt** (`^6.0.0`): Password hashing
+- **express-bearer-token** (`^3.0.0`): Header token extraction
 
-### Email Service
-- **nodemailer (v8.0.4)**: Email delivery service
-- **express-bearer-token (v3.0.0)**: Bearer token extraction middleware
+### Email & Communication
+- **nodemailer** (`^8.0.4`): SMTP Email service for sending OTP codes
 
-### Validation
-- **express-validator (v7.3.1)**: Request validation middleware
-
-### Documentation
-- **swagger-jsdoc (v6.2.8)**: OpenAPI/Swagger documentation generator
-- **swagger-ui-express (v5.0.1)**: Swagger UI for API documentation
-
-### Utilities
-- **dotenv (v17.3.1)**: Environment variable management
-- **exceljs (v4.4.0)**: Excel file generation for reports
-- **crypto (v1.0.1)**: Cryptographic operations
-
-### Development Tools
-- **nodemon (v3.1.14)**: Auto-restart server during development
+### File Generation & Validation
+- **exceljs** (`^4.4.0`): Excel spreadsheet exporter (`.xlsx`)
+- **express-validator** (`^7.3.1`): Request body DTO validation
 
 ---
 
 ## Database Schema
 
-### Users Table
+### 1. Users Table (`users`)
 ```sql
-CREATE TABLE users (
-    id                SERIAL PRIMARY KEY,
-    name              VARCHAR(100) NOT NULL,
-    email             VARCHAR(100) UNIQUE NOT NULL,
-    password          VARCHAR(255) NOT NULL,
-    phone             VARCHAR(20),
-    profile_picture   VARCHAR(500),
-    role              VARCHAR(20) DEFAULT 'USER',
-    is_active         BOOLEAN DEFAULT true,
-    created_at        TIMESTAMP DEFAULT NOW(),
-    updated_at        TIMESTAMP DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS users (
+    id              SERIAL PRIMARY KEY,
+    first_name      VARCHAR(100) NOT NULL,
+    last_name       VARCHAR(100) NOT NULL,
+    email           VARCHAR(50) NOT NULL UNIQUE,
+    password        TEXT,
+    google_id       VARCHAR(255) UNIQUE,
+    role            VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'user')),
+    is_active       BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at      TIMESTAMP DEFAULT NOW(),
+    token_version   INT DEFAULT 1 NOT NULL
 );
 ```
 
-**Relationships**: Parent table for expenses, budgets, and OTP records
-
----
-
-### Expenses Table
+### 2. Expenses Table (`expenses`)
 ```sql
-CREATE TABLE expenses (
+CREATE TABLE IF NOT EXISTS expenses (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
     title      VARCHAR(150) NOT NULL,
@@ -150,23 +130,15 @@ CREATE TABLE expenses (
                ('Food', 'Transport', 'Shopping', 'Health', 
                 'Entertainment', 'Bills', 'Others')),
     date       VARCHAR(20) NOT NULL,
-    note       VARCHAR(300),
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-**Features**:
-- Category constraint enforces predefined categories
-- CASCADE deletion maintains referential integrity
-- Numeric precision for accurate financial calculations
-
----
-
-### Budgets Table
+### 3. Budgets Table (`budgets`)
 ```sql
-CREATE TABLE budgets (
+CREATE TABLE IF NOT EXISTS budgets (
     id                SERIAL PRIMARY KEY,
-    user_id           INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id           INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
     total_budget      NUMERIC(10, 2) NOT NULL,
     remaining_budget  NUMERIC(10, 2) NOT NULL,
     created_at        TIMESTAMP DEFAULT NOW(),
@@ -174,625 +146,178 @@ CREATE TABLE budgets (
 );
 ```
 
-**Purpose**: Track budget allocation and remaining budget for users
-
----
-
-### OTP Table
+### 4. OTP Table (`otps`)
 ```sql
-CREATE TABLE otps (
+CREATE TABLE IF NOT EXISTS otps (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    code       VARCHAR(10) UNIQUE NOT NULL,
+    code       VARCHAR(10) NOT NULL,
     purpose    VARCHAR(50) NOT NULL,
+    email      VARCHAR(100) NOT NULL,
     attempts   INTEGER DEFAULT 0,
-    is_used    BOOLEAN DEFAULT false,
-    expires_at TIMESTAMP NOT NULL,
+    isUsed     BOOLEAN DEFAULT FALSE,
+    expired_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
-
-**OTP Purposes**:
-- `LOGIN`: OTP verification during login
-- `RESET_PASSWORD`: OTP for password reset verification
-
----
-
-## Module Architecture
-
-### 1. Authentication Module (`/modules/auth/`)
-
-**Purpose**: Handles user authentication, registration, login, and password management
-
-**Components**:
-
-#### Controllers
-- **AuthenticationController**: Orchestrates authentication requests
-
-#### Services
-- **AuthenticationService**: Business logic for authentication operations
-  - `registerUser()`: Create new user account
-  - `login()`: Authenticate user and send OTP
-  - `verifyUser()`: Verify OTP and issue tokens
-  - `refreshToken()`: Generate new access token using refresh token
-  - `forgetPassword()`: Initiate password reset process
-  - `verifyOtpForReset()`: Verify OTP for password reset
-  - `resetPassword()`: Update user password
-
-#### DTOs (Data Transfer Objects)
-- `LoginDto`: Login request validation
-- `RegisterUserDto`: User registration request
-- `RefreshTokenDto`: Token refresh request
-- `ForgetPasswordDto`: Password reset request
-- `ResetPasswordDto`: New password submission
-- `VerifyOtpDto`: OTP verification request
-
----
-
-### 2. User Management Module (`/modules/users/`)
-
-**Purpose**: Manages user profiles, roles, and account operations
-
-**Components**:
-
-#### Controllers
-- **UserController**: Handles user-related HTTP requests
-
-#### Services
-- **UserService**: User business logic
-  - `createUser()`: Register new user
-  - `getByEmail()`: Retrieve user by email
-  - `getById()`: Fetch user details
-  - `updateUser()`: Modify user information
-  - `deleteUser()`: Remove user account
-
-#### Repositories
-- **UserRepository**: Database access layer for user operations
-
----
-
-### 3. Expense Management Module (`/modules/expenses/`)
-
-**Purpose**: Tracks and manages user expenses with categorization
-
-**Components**:
-
-#### Database Entity
-- **Expense Schema**: Defines table structure with categories
-
-#### Controllers
-- **ExpenseController**: Handles expense-related requests
-
-#### Services
-- **ExpenseService**: Business logic for expense operations
-  - `createExpense()`: Record new expense
-  - `getExpenses()`: Retrieve all expenses with filtering
-  - `getExpenseById()`: Fetch specific expense
-  - `updateExpense()`: Modify expense details
-  - `deleteExpense()`: Remove expense record
-  - `getExpensesByCategory()`: Filter by category
-  - `generateMonthlyReport()`: Create financial reports
-
-#### Repositories
-- **ExpenseRepository**: Data access for expense operations
-
-#### DTOs
-- `CreateExpenseDto`: Expense creation validation
-- `UpdateExpenseDto`: Expense update validation
-- `ExpenseResponseDto`: Standardized expense response format
-
----
-
-### 4. Budget Management Module (`/modules/budget/`)
-
-**Purpose**: Manages budget allocation and spending limits
-
-**Components**:
-
-#### Database Entity
-- **Budget Schema**: Budget tracking structure
-
-#### Controllers
-- **BudgetController**: Handles budget requests
-
-#### Services
-- **BudgetService**: Budget business logic
-  - `createBudget()`: Set up budget for user
-  - `getBudget()`: Retrieve budget information
-  - `updateBudget()`: Modify budget amounts
-  - `calculateRemainingBudget()`: Compute available spending
-
-#### Repositories
-- **BudgetRepository**: Database operations for budgets
-
-#### DTOs
-- `CreateBudgetRequestDto`: Budget creation validation
-- `UpdateBudgetRequestDto`: Budget update validation
-- `BudgetResponseDto`: Standardized budget response
-
----
-
-### 5. OTP Service Module (`/modules/otp/`)
-
-**Purpose**: Manages one-time password generation and verification
-
-**Components**:
-
-#### Database Entity
-- **OTP Schema**: OTP records table structure
-
-#### Services
-- **OtpService**: OTP operations
-  - `generateOtp()`: Create 6-digit OTP
-  - `sendOtp()`: Deliver OTP via email
-  - `verifyAndConsume()`: Validate and mark OTP as used
-  - `validateExpiry()`: Check OTP validity period
-
-#### Repositories
-- **OtpRepository**: Database access for OTP records
-
-#### DTOs
-- `VerifyOtpDto`: OTP verification request validation
-
----
-
-### 6. Admin Module (`/modules/admin/`)
-
-**Purpose**: Administrative functions and system management
-
-**Components**:
-
-#### Seeder
-- **AdminSeeder**: Initialize default admin user on application startup
-
-#### Repositories
-- **AdminRepository**: Admin-specific database operations
 
 ---
 
 ## Core Features
 
-### 1. User Authentication
-- **Registration**: New user account creation with email verification
-- **Login**: Email and password-based authentication with OTP verification
-- **Token Management**: JWT tokens with RSA-256 signing for secure sessions
-- **Refresh Token**: Extend session without re-authentication
-- **Password Reset**: Secure password recovery via OTP verification
-
-### 2. Expense Tracking
-- **Expense Recording**: Create expenses with title, amount, category, date, and notes
-- **Categorization**: Predefined categories (Food, Transport, Shopping, Health, Entertainment, Bills, Others)
-- **Filtering & Search**: Retrieve expenses by date range, category, or user
-- **Expense Management**: Update and delete expense records
-- **Monthly Reports**: Generate expense summaries and trends
-
-### 3. Budget Management
-- **Budget Allocation**: Set monthly or custom budget limits
-- **Budget Tracking**: Monitor spending against allocated budget
-- **Remaining Balance**: Calculate available spending at any time
-- **Budget Updates**: Adjust budget limits as needed
-
-### 4. Email Notifications
-- **OTP Delivery**: Send one-time passwords to user email
-- **Account Alerts**: Notify users of account activities
-- **Password Resets**: Email verification for password changes
-
-### 5. Role-Based Access Control
-- **User Roles**: USER, ADMIN roles with different permissions
-- **Admin Dashboard**: Administrative functions for system management
-- **Access Control**: Middleware-based role enforcement
-
-### 6. Security Features
-- **Password Hashing**: bcrypt with configurable salt rounds
-- **JWT Authentication**: RSA-256 signed tokens for API security
-- **Bearer Token**: Token-based authorization header validation
-- **OTP Verification**: Multi-factor authentication support
-- **Input Validation**: Request body validation using express-validator
-- **Transaction Support**: Database transaction handling for data consistency
+1. **User Authentication & OTP Verification**:
+   - Registration triggers initial user creation.
+   - Login sends a 6-digit OTP code to the user's email.
+   - Verifying OTP activates inactive accounts and issues access & refresh tokens.
+   - Google OAuth2 endpoint allows one-click social authentication.
+2. **Token Revocation (Logout)**:
+   - Calling `/api/v1/auth/logout` increments `token_version` in the database.
+   - Any refresh tokens issued prior to logout immediately become invalid.
+3. **Expense Management**:
+   - Create, view, update, and delete expenses.
+   - Expense creation automatically deducts amount from user's remaining budget inside a database transaction (`withTransaction`).
+   - Export expense list to Excel (`.xlsx`).
+4. **Budget Allocation**:
+   - Define total spending limits and monitor remaining budget in real-time.
+5. **Admin Capabilities**:
+   - View system user directory and filter users by ID or Email.
+   - Activate/Deactivate users and export user lists to Excel (`.xlsx`).
+   - Monitor total system financial transactions.
 
 ---
 
 ## API Endpoints
 
-### Authentication Endpoints (`/auth`)
+Base URL: `http://localhost:3000/api/v1`
+
+### 🔑 Authentication Routes (`/auth`)
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/auth/register` | Register new user | No |
-| POST | `/auth/login` | Login and receive OTP | No |
-| POST | `/auth/verify` | Verify OTP and get tokens | No |
-| POST | `/auth/refresh` | Refresh access token | Yes |
-| POST | `/auth/forget` | Initiate password reset | No |
-| POST | `/auth/verifyotp` | Verify OTP for password reset | No |
-| POST | `/auth/reset` | Reset password | No |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/register` | Register new user account | No |
+| `POST` | `/auth/login` | Validate password & trigger OTP email | No |
+| `POST` | `/auth/verify` | Verify OTP code & return Access/Refresh tokens | No |
+| `POST` | `/auth/refresh` | Issue new Access token via Refresh token | No |
+| `POST` | `/auth/forget` | Send OTP for password reset | No |
+| `POST` | `/auth/verifyotp` | Verify OTP code for password reset | No |
+| `POST` | `/auth/reset` | Submit new password with reset token | No |
+| `POST` | `/auth/logout` | Revoke current tokens (increments `token_version`) | Yes |
+| `GET` | `/auth/google` | Initiate Google OAuth2 authentication | No |
+| `GET` | `/auth/google/callback` | Google OAuth2 callback redirect handler | No |
 
-### User Endpoints (`/users`)
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/users` | Get user profile | Yes |
-| GET | `/users/:id` | Get user by ID | Yes |
-| PUT | `/users/:id` | Update user profile | Yes |
-| DELETE | `/users/:id` | Delete user account | Yes |
-| POST | `/users` | Create new user (Admin) | Yes |
-
-### Expense Endpoints (`/expenses`)
+### 👤 Profile User Routes (`/users`)
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/expenses` | Get all user expenses | Yes |
-| GET | `/expenses/:id` | Get expense by ID | Yes |
-| POST | `/expenses` | Create new expense | Yes |
-| PUT | `/expenses/:id` | Update expense | Yes |
-| DELETE | `/expenses/:id` | Delete expense | Yes |
-| GET | `/expenses/category/:category` | Filter by category | Yes |
-| GET | `/expenses/report/monthly` | Generate monthly report | Yes |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/users/me` | Fetch authenticated user profile | Yes |
+| `PATCH` | `/users/me` | Update authenticated user profile | Yes |
+| `DELETE` | `/users/me` | Delete authenticated user account | Yes |
 
-### Budget Endpoints (`/budget`)
+### 💸 Expense Routes (`/expenses`)
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/budget` | Get user budget | Yes |
-| POST | `/budget` | Create budget | Yes |
-| PUT | `/budget/:id` | Update budget | Yes |
-| DELETE | `/budget/:id` | Delete budget | Yes |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/expenses/` | Create a new expense | Yes |
+| `GET` | `/expenses/user/me` | Fetch all expenses for logged-in user | Yes |
+| `GET` | `/expenses/me/:id` | Fetch specific expense by ID | Yes |
+| `GET` | `/expenses/downloadxlsx` | Download expense report in `.xlsx` format | Yes |
+| `PATCH` | `/expenses/:id` | Update expense details | Yes |
+| `DELETE` | `/expenses/:id` | Delete expense record | Yes |
 
-### Admin Endpoints (`/admin`)
+### 🎯 Budget Routes (`/budget`)
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/admin/users` | Get all users | Yes (Admin) |
-| GET | `/admin/analytics` | System analytics | Yes (Admin) |
-| POST | `/admin/seed` | Seed initial data | Yes (Admin) |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/budget/` | Create initial user budget | Yes |
+| `GET` | `/budget/me` | Retrieve current user budget | Yes |
+| `PATCH` | `/budget/me` | Top-up or update total budget amount | Yes |
+| `DELETE` | `/budget/me` | Delete budget allocation | Yes |
 
-### Health Check (`/`)
+### 👑 Admin Routes (`/admin`)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Health check endpoint |
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/admin/users` | Retrieve all registered users | Admin |
+| `GET` | `/admin/users/downloadusersxlsx` | Export all users to Excel (`.xlsx`) | Admin |
+| `GET` | `/admin/users/email` | Find user by email query | Admin |
+| `GET` | `/admin/users/:id` | Find user by ID | Admin |
+| `POST` | `/admin/users` | Create user account via admin | Admin |
+| `PATCH` | `/admin/users/:id` | Update user details via admin | Admin |
+| `PATCH` | `/admin/users/:id/deactivate` | Deactivate user account | Admin |
+| `DELETE` | `/admin/users/:id` | Delete user account via admin | Admin |
+| `GET` | `/admin/expenses/alltransactions` | Sum of total system transactions | Admin |
+| `GET` | `/admin/expensesall/:userId` | Get expenses for a specific user ID | Admin |
+| `GET` | `/admin/expenses/:id` | Get expense record by ID | Admin |
 
 ---
 
-## Security Implementation
+## Security & Authentication
 
-### 1. Password Security
-**Service**: `HashingService` (`common/hashingService/hashing.service.js`)
+### RS256 Asymmetric JWT Tokens
+- Tokens are signed using an **RSA 2048-bit Private Key** (`src/keys/private_key.pem`) and verified with the **Public Key** (`src/keys/public_key.pem`).
+- Access Tokens expire in **15 minutes**.
+- Refresh Tokens include `tokenVersion`.
 
-```javascript
-async hashPassword(password, saltOrRounds = 10)
-async comparePlainPass(plainPassword, hashedPassword)
+### Token Revocation via `token_version`
+- When a user logs out, the database increments `token_version` via:
+  ```sql
+  UPDATE users SET token_version = COALESCE(token_version, 1) + 1 WHERE id = $1
+  ```
+- Any token presented with an older `tokenVersion` is automatically rejected during refresh.
+
+---
+
+## Development & Setup
+
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL Database server running locally or remotely
+
+### Environment Setup (`.env`)
+
+Create a `.env` file in the project root:
+
+```env
+PORT=3000
+
+# Database
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_PORT=5432
+DB_NAME=expense_tracker
+
+# JWT
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+JWT_RESET_EXPIRES_IN=15m
+
+# SMTP Email
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# Default Admin Seeder
+FIRSTNAME=Muhammad
+LASTNAME=Tariq
+EMAIL=admin@example.com
+PASSWORD=Change_Me_123
+
+# Google OAuth2
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/v1/auth/google/callback
+CORS_ORIGIN=http://localhost:5173
 ```
 
-- Uses bcrypt with configurable salt rounds (default: 10)
-- Asynchronous operations prevent blocking
-- One-way hashing prevents password visibility
-
-### 2. JWT Authentication
-**Service**: `JWTService` (`common/jwtService/jwt.service.js`)
-
-**Token Types**:
-- **Access Token**: Short-lived token for API requests (expires in configurable time)
-- **Refresh Token**: Long-lived token for obtaining new access tokens
-
-**Implementation Details**:
-- RSA-256 (RS256) asymmetric signing algorithm
-- Private key for token generation
-- Public key for token verification
-- Payload includes: `sub` (user ID), `email`, `role`, `type`
-
-**Token Generation**:
-```javascript
-async generateAccessToken(id, email, role)
-async generateRefreshToken(id, email, role)
-```
-
-### 3. Bearer Token Authentication
-**Middleware**: `express-bearer-token`
-
-- Extracts bearer token from Authorization header
-- Validates token presence and format
-- Attached to `req.token` for downstream use
-
-### 4. OTP Verification
-**Service**: `OtpService` (`modules/otp/services/`)
-
-- Random 6-digit OTP generation
-- Email delivery verification
-- Expiration time enforcement (typically 10-15 minutes)
-- Single-use consumption prevents reuse
-- Attempt tracking prevents brute force attacks
-
-### 5. Role-Based Access Control
-**Middleware**: `CheckRoleMiddleware` (`middlewares/roles/check-role.middleware.js`)
-
-- Verifies user role from JWT payload
-- Enforces endpoint-level access control
-- Supports multiple roles per endpoint
-
-### 6. Input Validation
-**Middleware Layer**: `validation.middleware.js`
-
-- Express-validator for request body validation
-- DTO-based validation rules
-- Prevents invalid data entry
-- Sanitizes input to prevent injection attacks
-
----
-
-## Error Handling
-
-### Custom Error Classes
-Located in `/common/errors/`:
-
-#### 1. **ValidationError** (`validate-integer-values.error.js`)
-- Thrown when input validation fails
-- HTTP Status: 400 Bad Request
-
-#### 2. **NotExistError** (`not-exist.error.js`)
-- Thrown when requested resource not found
-- HTTP Status: 404 Not Found
-
-### Error Handling Pattern
-
-```javascript
-try {
-    // Business logic
-} catch (error) {
-    if (error instanceof NotExistError) {
-        return res.status(404).json({ message: error.message });
-    }
-    if (error instanceof ValidationError) {
-        return res.status(400).json({ message: error.message });
-    }
-    // Generic error response
-    return res.status(500).json({ message: 'Internal Server Error' });
-}
-```
-
-### Database Transaction Error Handling
-**Function**: `withTransaction()` in `config/db.config.js`
-
-- Automatic rollback on error
-- Maintains data consistency
-- Releases database connections properly
-
----
-
-## Configuration
-
-### Application Configuration Files
-
-#### 1. **Database Configuration** (`src/config/db.config.js`)
-- PostgreSQL connection pooling
-- Automatic table creation on startup
-- Transaction support with rollback
-
-#### 2. **Swagger Configuration** (`src/app.js`)
-- OpenAPI 3.0.0 specification
-- Endpoint documentation at `/api-docs`
-- Automatic API schema generation from JSDoc comments
-
----
-
-## Development & Deployment
-
-### Installation & Setup
+### Installation & Execution
 
 ```bash
-# Install dependencies
-pnpm install
+# 1. Install dependencies
+npm install
 
-# Create .env file
-cp .env.example .env
+# 2. Run in Development Mode (Nodemon)
+npm run dev
 
-# Generate JWT keys (if not present)
-ssh-keygen -t rsa -b 2048 -m pem -f src/keys/private_key.pem -N ""
-openssl rsa -in src/keys/private_key.pem -pubout -out src/keys/public_key.pem
+# 3. Run in Production Mode
+npm start
 ```
-
-### Running the Application
-
-#### Development Mode (with auto-reload)
-```bash
-pnpm run dev
-```
-
-#### Production Mode
-```bash
-pnpm start
-```
-
-### Database Setup
-
-The application automatically creates all required tables on startup:
-1. Users table
-2. Expenses table
-3. OTP table
-4. Budgets table
-
-### Scripts Available
-
-| Script | Command | Purpose |
-|--------|---------|---------|
-| Start | `pnpm start` | Run production server |
-| Dev | `pnpm run dev` | Run development server with auto-reload |
-
-### API Documentation
-Access Swagger UI at: `http://localhost:3000/api-docs`
-
-### Database Schema Initialization
-
-Tables are created automatically in the following order:
-1. **users**: Parent table for other entities
-2. **expenses**: Depends on users
-3. **otps**: Depends on users
-4. **budgets**: Depends on users
-
-### Admin Seeding
-On application startup, the `AdminSeeder` creates default admin user:
-- **Email**: admin@example.com (configurable)
-- **Role**: ADMIN
-- **Purpose**: System administration and analytics
-
----
-
-## Middleware Pipeline
-
-### Request Flow
-```
-1. Express JSON Parser
-2. Bearer Token Extraction
-3. Route Matching
-4. Input Validation Middleware (DTO validators)
-5. Authentication Check (if required)
-6. Authorization Check (if required)
-7. Controller Handler
-8. Service Layer Processing
-9. Repository Database Operations
-10. Response Formatting
-```
-
-### Available Middlewares
-
-#### Authentication
-- **`auth.middleware.js`**: Verifies JWT token validity
-- **`validate-login-request-dto.middleware.js`**: Validates login payload
-- **`validate-register-user.dto.js`**: Validates registration payload
-- **`validate-refresh-token-dto.middleware.js`**: Validates token refresh request
-- **`validate-verifyotp-middleware.js`**: Validates OTP verification request
-- **`validate-forget-password-dto.middleware.js`**: Validates password reset initiation
-- **`validate-reset-password.dto.js`**: Validates new password submission
-
-#### Authorization
-- **`check-role.middleware.js`**: Enforces role-based access control
-
-#### Resource Validation
-- **`validate-create-expense-dto.middleware.js`**: Expense creation validation
-- **`validate-update-expense-dto.middleware.js`**: Expense update validation
-- **`validate-create-budget-dto.middleware.js`**: Budget creation validation
-- **`validate-update-budget-dto.middleware.js`**: Budget update validation
-- **`validate-create-user-dto.middleware.js`**: User creation validation (Admin)
-- **`validate-update-user-dto.middleware.js`**: User update validation
-
----
-
-## Data Flow Example: User Login
-
-```
-1. POST /auth/login
-   ├─ Body: { email, password }
-   ├─ Validation Middleware: Validate DTO
-   ├─ AuthController.logIn()
-   │   ├─ AuthService.login()
-   │   │   ├─ UserService.getByEmail()
-   │   │   │   └─ UserRepository.findByEmail()
-   │   │   │       └─ Database Query
-   │   │   ├─ HashingService.comparePlainPass()
-   │   │   └─ OtpService.sendOtp()
-   │   │       ├─ OTP Generation
-   │   │       ├─ Email Service Delivery
-   │   │       └─ OTP Database Storage
-   │   └─ Response: "OTP sent successfully"
-   
-2. POST /auth/verify
-   ├─ Body: { email, code }
-   ├─ Validation Middleware: Validate DTO
-   ├─ AuthController.verify()
-   │   ├─ AuthService.verifyUser()
-   │   │   ├─ UserService.getByEmail()
-   │   │   ├─ OtpService.verifyAndConsume()
-   │   │   ├─ JWTService.generateAccessToken()
-   │   │   └─ JWTService.generateRefreshToken()
-   │   └─ Response: { accessToken, refreshToken }
-```
-
----
-
-## Performance Considerations
-
-### Database Optimization
-- Connection pooling reduces overhead
-- Indexes on frequently queried fields (email, user_id)
-- Foreign key relationships with cascade deletion
-- Transaction support prevents partial updates
-
-### Scalability
-- Stateless API design allows horizontal scaling
-- JWT authentication without server-side sessions
-- Database connection pooling handles concurrent requests
-- Async/await pattern for non-blocking operations
-
-### Security Best Practices
-- RSA-256 signed JWTs prevent token tampering
-- Password hashing with bcrypt prevents rainbow table attacks
-- OTP expiration prevents brute force attempts
-- Role-based access control restricts unauthorized access
-- Input validation prevents injection attacks
-
----
-
-## Future Enhancements
-
-### Planned Features
-- [ ] Two-factor authentication (2FA)
-- [ ] Advanced reporting with charts and analytics
-- [ ] Budget alerts and notifications
-- [ ] Recurring expenses
-- [ ] Expense splitting between users
-- [ ] Multi-currency support
-- [ ] Mobile app integration
-- [ ] Export reports to PDF/Excel
-
-### Potential Improvements
-- [ ] Implement caching layer (Redis)
-- [ ] Add API rate limiting
-- [ ] Implement audit logging
-- [ ] Add unit and integration tests
-- [ ] Docker containerization
-- [ ] CI/CD pipeline setup
-- [ ] Database migration system
-- [ ] API versioning
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### Database Connection Error
-```
-Error: Cannot connect to database
-Solution: 
-- Verify PostgreSQL is running
-- Check DB credentials in .env
-- Ensure database exists
-```
-
-#### JWT Key Files Missing
-```
-Error: ENOENT: no such file or directory ... private_key.pem
-Solution:
-- Generate keys: ssh-keygen -t rsa -b 2048 -m pem -f src/keys/private_key.pem -N ""
-- Create public key: openssl rsa -in src/keys/private_key.pem -pubout -out src/keys/public_key.pem
-```
-
-#### Email Service Not Working
-```
-Error: Failed to send OTP email
-Solution:
-- Verify email credentials in .env
-- Enable "Less secure app access" for Gmail
-- Use app-specific password for Gmail accounts
-```
-
----
-
-## Conclusion
-
-This Personal Expense Tracker application demonstrates a robust, secure, and scalable Node.js backend architecture. The implementation follows industry best practices including layered architecture, comprehensive error handling, security measures, and clear separation of concerns. The system provides a solid foundation for personal finance management and can be extended with additional features as requirements evolve.
-
----
-
-**Document Version**: 2.0  
-**Last Updated**: May 5, 2026  
-**Maintained By**: Muhammad Tariq Sohail

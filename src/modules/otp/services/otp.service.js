@@ -13,19 +13,19 @@ export class OtpService {
         this.OTP_EXPIRY_MINUTES = 10;
     }
 
-    async getOtpById(id) {
-        try {
-            const parseId = Number(id);
-            validateIntegerValues(parseId, "Otp ID");
-            const otp = await this.otpRepository.getById(parseId);
-            if(!otp) {
-                return notFound(otp, "otp");
-            }
-            return otp;
-        }catch(error) {
-            throw error;
-        }
-    }
+    // async getOtpById(id) {
+    //     try {
+    //         const parseId = Number(id);
+    //         validateIntegerValues(parseId, "Otp ID");
+    //         const otp = await this.otpRepository.getById(parseId);
+    //         if(!otp) {
+    //             return notFound(otp, "otp");
+    //         }
+    //         return otp;
+    //     }catch(error) {
+    //         throw error;
+    //     }
+    // }
 
     async generateOtp() {
         try {

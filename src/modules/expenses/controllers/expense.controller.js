@@ -9,10 +9,12 @@ export class ExpenseController {
     getExpensesByUserId = async (req, res) => {
         try {
             const { userId } = req.params;
-            const page = req.query.page || 1;
-            const limit = req.query.limit || 5;
-            const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId, page, limit);
-            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
+            // const page = req.query.page || 1;
+            // const limit = req.query.limit || 5;
+            // const { data: expenses, pagination } = await this.expenseService.getAllExpenses(userId, page, limit);
+            const { data: expenses } = await this.expenseService.getAllExpenses(userId);
+            // res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense)), pagination: pagination });
+            res.status(200).json({ data: expenses.map(expense => ExpenseResponseDto(expense))});
         } catch (error) {
             const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
             res.status(statusCode).json({ message: error.message });
