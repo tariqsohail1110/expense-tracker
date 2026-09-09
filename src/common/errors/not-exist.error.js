@@ -1,5 +1,5 @@
 export const notExists = (param, name) => {
-    if (!param) {
+    if (param === undefined || !param === null || !param) {
         throw new Error(`${ name } not found!`);
     }return param;
 }

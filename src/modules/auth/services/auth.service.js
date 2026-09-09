@@ -92,15 +92,16 @@ export class AuthenticationService {
     async forgetPassword(email) {
         try {
             const user = await this.userService.getByEmail(email);
-            if(user) {}
+            if(user) {
                 await this.otpService.sendOtp(
                     user.id,
                     email,
                     OtpPurpose.PASSWORD_RESET
                 );
-            return { message: 'If this email is registered, an OTP will be sent to it' };
+                return { message: 'If this email is registered, an OTP will be sent to it' };
+            }
         }catch(error) {
-            return { message: 'If this email is registered, an OTP will be sent to it' };
+            throw error;
         }
     }
 
