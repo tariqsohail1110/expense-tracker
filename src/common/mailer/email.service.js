@@ -1,16 +1,24 @@
 import { OtpEmailTemplate } from './email.template.js';
 import dotenv from 'dotenv';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+    host: 'smtp-relay.brevo.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_SMTP_KEY,
+    },
+});
 
 export class EmailService {
     async sendMail(to, subject, html) {
         try {
-            await resend.emails.send({
-                from: `noreply <${process.env.RESEND_FROM_EMAIL}>`,
+            await transporter.sendMail({
+                from: `noreply <${process.env.BREVO_FROM_EMAIL}>`,
                 to: to,
                 subject: subject,
                 html: html,

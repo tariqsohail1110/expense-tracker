@@ -27,7 +27,7 @@ export const initDB = async () => {
 }
 
 pool.connect(err => {
-    if(err) {
+    if (err) {
         console.log('AN error occured', err.stack);
     } else {
         console.log('Database connected successfully');
@@ -44,10 +44,10 @@ export const withTransaction = async (callback) => {
         const result = await callback(client);
         await client.query('COMMIT');
         return result;
-    }catch(error) {
+    } catch (error) {
         await client.query('ROLLBACK');
         throw error;
-    }finally{
+    } finally {
         client.release();
     }
 }
