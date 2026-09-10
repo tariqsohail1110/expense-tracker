@@ -15,6 +15,7 @@ const pool = new Pool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    ssl: { rejectUnauthorized:false },
 });
 
 export const initDB = async () => {
@@ -28,7 +29,9 @@ export const initDB = async () => {
 pool.connect(err => {
     if(err) {
         console.log('AN error occured', err.stack);
-    }console.log('Database connected successfully');
+    } else {
+        console.log('Database connected successfully');
+    }
 });
 
 export default pool;
