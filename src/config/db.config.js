@@ -15,7 +15,7 @@ const pool = new Pool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    ssl: { rejectUnauthorized:false },
+    ssl: { rejectUnauthorized:false }, //for production use this, for local comment it out
 });
 
 export const initDB = async () => {
