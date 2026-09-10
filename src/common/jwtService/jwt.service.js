@@ -9,18 +9,24 @@ dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// In production, keys come from env vars. In local dev, fall back to .pem files.
+const getPrivateKey = () =>
+    process.env.JWT_PRIVATE_KEY
+        ? process.env.JWT_PRIVATE_KEY.replace(/\\n/g, '\n')
+        : fs.readFileSync(join(__dirname, '../../keys/private_key.pem'), 'utf8');
+
+const getPublicKey = () =>
+    process.env.JWT_PUBLIC_KEY
+        ? process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n')
+        : fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
+
 export class JWTService {
 
     constructor() {
         this.userService = new UserService();
     }
-    readPrivateKey = () => {
-        return fs.readFileSync(join(__dirname, '../../keys/private_key.pem'), 'utf8');
-    }
-
-    readPublicKey = () => {
-        return fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
-    }
+    readPrivateKey = () => getPrivateKey();
+    readPublicKey = () => getPublicKey();
 
     async generateAccessToken(id, email, role) {
         try {
