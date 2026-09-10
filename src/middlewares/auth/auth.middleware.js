@@ -5,9 +5,10 @@ import fs from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const readPublicKey = () => {
-        return fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
-    }
+const readPublicKey = () =>
+    process.env.JWT_PUBLIC_KEY
+        ? process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n')
+        : fs.readFileSync(join(__dirname, '../../keys/public_key.pem'), 'utf8');
 
 export const authMiddleware = async (req, res, next) => {
     const token = req.token;
